@@ -3,50 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enterprise Workforce Hub</title>
+  <title>TVS Workforce & Governance Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
     body { font-family: 'Inter', sans-serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .col-updated { background-color: #dcfce7 !important; border-color: #86efac !important; }
-    .col-not-updated { background-color: #fee2e2 !important; border-color: #fca5a5 !important; }
-    .col-upcoming { background-color: #fef9c3 !important; border-color: #fde047 !important; }
-    .col-holiday { background-color: #ffedd5 !important; border-color: #fdba74 !important; }
+    .col-updated { background-color: #dcfce7 !important; border-color: #86efac !important; color: #166534 !important; }
+    .col-not-updated { background-color: #fee2e2 !important; border-color: #fca5a5 !important; color: #991b1b !important; }
+    .col-upcoming { background-color: #fef9c3 !important; border-color: #fde047 !important; color: #854d0e !important; }
+    .col-holiday { background-color: #ffedd5 !important; border-color: #fdba74 !important; color: #9a3412 !important; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- TOP NAVIGATION BAR -->
+  <!-- TOP NAVIGATION -->
   <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="h-9 w-9 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="window.handleHomeClick()">
+        <div class="h-9 w-9 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md">
           <i data-lucide="layers" class="w-5 h-5"></i>
         </div>
         <div>
-          <span class="font-bold text-lg tracking-tight text-white block leading-none">NEXUS WORKFORCE</span>
-          <span class="text-[10px] font-medium tracking-wider uppercase text-slate-400">Enterprise Governance</span>
+          <span class="font-bold text-lg tracking-tight text-white block leading-none">TVS MOTOR COMPANY</span>
+          <span class="text-[10px] font-medium tracking-wider uppercase text-slate-400">Workforce &amp; Operations Portal</span>
         </div>
       </div>
 
       <div class="flex items-center space-x-4">
+        <div id="sync-status-badge" class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-semibold">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span>Connecting Cloud...</span>
+        </div>
+
         <div id="role-badge-container" class="hidden sm:flex items-center"></div>
 
         <div class="relative">
           <button id="user-menu-btn" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition">
             <i data-lucide="user-circle-2" class="w-5 h-5 text-indigo-400"></i>
-            <span id="nav-user-name" class="text-xs font-semibold uppercase">Loading...</span>
+            <span id="nav-user-name" class="text-xs font-semibold uppercase hover:underline">Loading...</span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
           </button>
 
-          <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1 text-slate-800 z-50">
-            <div class="px-4 py-2 border-b border-slate-100">
+          <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-xl border border-slate-200 py-1 text-slate-800 z-50">
+            <div class="px-4 py-2.5 border-b border-slate-100 cursor-pointer hover:bg-slate-50 transition" onclick="window.openUserProfileModal()">
               <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Signed in as</p>
               <p id="dropdown-user-id" class="text-sm font-bold text-slate-900 font-mono"></p>
+              <span class="text-[10px] text-indigo-600 font-semibold mt-0.5 block">Click to view account summary &rarr;</span>
             </div>
-            <button id="btn-edit-admin-profile" class="hidden w-full text-left px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center space-x-2">
+            <button id="btn-view-profile-opt" onclick="window.openUserProfileModal()" class="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center space-x-2">
+              <i data-lucide="id-card" class="w-4 h-4 text-slate-500"></i>
+              <span>Account Summary</span>
+            </button>
+            <button id="btn-edit-admin-profile" class="hidden w-full text-left px-4 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-50 flex items-center space-x-2 border-t border-slate-100">
               <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
               <span>Edit Admin Profile</span>
             </button>
@@ -63,7 +83,17 @@
   <!-- MAIN CONTAINER -->
   <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
 
-    <!-- CONTROLS & TIMELINE RIBBON -->
+    <div id="toast-banner" class="hidden rounded-lg p-3 text-xs font-semibold flex items-center justify-between shadow-sm transition-all duration-300">
+      <div class="flex items-center space-x-2">
+        <i id="toast-icon" data-lucide="info" class="w-4 h-4"></i>
+        <span id="toast-message">Message text</span>
+      </div>
+      <button onclick="document.getElementById('toast-banner').classList.add('hidden')" class="text-slate-400 hover:text-slate-600">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- RIBBON -->
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-3">
@@ -80,14 +110,11 @@
           <div>
             <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Select Week</label>
             <select id="select-week" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="21">Week 21 (May)</option>
-              <option value="22">Week 22 (May)</option>
-              <option value="23">Week 23 (Jun)</option>
-              <option value="24">Week 24 (Jun)</option>
-              <option value="25" selected>Week 25 (Sep)</option>
-              <option value="26">Week 26 (Sep)</option>
-              <option value="27">Week 27 (Oct)</option>
-              <option value="28">Week 28 (Oct)</option>
+              <option value="23">Week 23 (Jun 2026)</option>
+              <option value="24">Week 24 (Jun 2026)</option>
+              <option value="25" selected>Week 25 (Sep 2026)</option>
+              <option value="26">Week 26 (Sep 2026)</option>
+              <option value="27">Week 27 (Oct 2026)</option>
             </select>
           </div>
 
@@ -101,8 +128,8 @@
 
         <div id="efficiency-metric-card" class="flex items-center space-x-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
           <div>
-            <div class="text-[10px] uppercase font-bold text-slate-500">Planned</div>
-            <div id="kpi-planned" class="text-sm font-bold text-slate-800 font-mono">37.5 hrs</div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Planned (Week Calendar Basis)</div>
+            <div id="kpi-planned" class="text-sm font-bold text-slate-800 font-mono">0.0 hrs</div>
           </div>
           <div class="h-8 w-px bg-slate-200"></div>
           <div>
@@ -118,15 +145,19 @@
       </div>
     </section>
 
-    <!-- MANAGER & ADMIN GOVERNANCE SUITE -->
+    <!-- GOVERNANCE PANEL -->
     <section id="governance-container" class="hidden space-y-6">
       <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <div>
-          <h2 class="text-base font-bold text-slate-800">Executive Governance & Workforce Matrix</h2>
-          <p class="text-xs text-slate-500">Monitor live team efficiency and edit employee details or Emp IDs instantly.</p>
+          <h2 class="text-base font-bold text-slate-800">Executive Governance &amp; Workforce Matrix</h2>
+          <p class="text-xs text-slate-500">Calendar overrides by week directly govern planned hours.</p>
         </div>
         
         <div class="flex items-center space-x-3">
+          <button id="btn-open-calendar-settings" class="text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg flex items-center space-x-1.5 transition">
+            <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
+            <span>Work Days &amp; Company Holiday Calendar</span>
+          </button>
           <button id="btn-open-export-modal" class="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
             <span>Export Data</span>
@@ -142,11 +173,36 @@
         </div>
       </div>
 
-      <!-- Efficiency Matrix -->
+      <!-- Presentation Bar Chart with Copy Option -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
+              <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-600"></i>
+              <span>Team Efficiency (Calendar Basis)</span>
+            </h3>
+            <p class="text-xs text-slate-500">Corporate visual report calculated by active calendar work days.</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button id="btn-copy-chart" class="text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Copy Graph</span>
+            </button>
+            <span id="chart-week-badge" class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-lg">Week 25 Metrics</span>
+          </div>
+        </div>
+        <div id="chart-canvas-container" class="bg-white p-4 rounded-xl border border-slate-100 shadow-inner">
+          <div class="relative h-72 w-full">
+            <canvas id="teamEfficiencyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Efficiency Table -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-800">Team Work Efficiency Matrix (Week 25)</h3>
-          <span class="text-xs font-medium text-slate-500">Live Status Overview</span>
+          <h3 id="table-week-heading" class="text-sm font-bold text-slate-800">Team Work Efficiency Matrix (Week 25)</h3>
+          <span class="text-xs font-medium text-slate-500">Week-Specific Calendar Working Days</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-700">
@@ -155,11 +211,11 @@
                 <th class="px-4 py-3">Emp ID</th>
                 <th class="px-4 py-3">Full Name</th>
                 <th class="px-4 py-3">Role</th>
-                <th class="px-4 py-3">Work Pattern</th>
-                <th class="px-4 py-3 text-center">Planned (Target)</th>
+                <th class="px-4 py-3 text-center">Planned Target</th>
                 <th class="px-4 py-3 text-center">Actual Logged</th>
                 <th class="px-4 py-3 text-center">Efficiency (%)</th>
-                <th class="px-4 py-3 text-center">Status</th>
+                <th class="px-4 py-3 text-center">Lock Status</th>
+                <th class="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody id="efficiency-matrix-tbody" class="divide-y divide-slate-100"></tbody>
@@ -167,11 +223,14 @@
         </div>
       </div>
 
-      <!-- User Governance Table -->
+      <!-- User Accounts Governance Table (Guaranteed Header Element) -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-800">User Governance & Credentials</h3>
-          <span class="text-xs text-slate-400">Managers & Admins can edit any ID or attribute</span>
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">User Governance &amp; Accounts</h3>
+            <p class="text-xs text-slate-500">Manage employee accounts and permission tiers.</p>
+          </div>
+          <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg" id="user-count-badge">0 Users</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-700">
@@ -179,8 +238,8 @@
               <tr>
                 <th class="px-4 py-3">Emp ID</th>
                 <th class="px-4 py-3">Full Name</th>
+                <th class="px-4 py-3">Password</th>
                 <th class="px-4 py-3">Role</th>
-                <th class="px-4 py-3">Work Pattern</th>
                 <th class="px-4 py-3">Department</th>
                 <th class="px-4 py-3 text-right">Actions</th>
               </tr>
@@ -191,31 +250,25 @@
       </div>
     </section>
 
-    <!-- STANDARD TIMESHEET SECTION -->
+    <!-- TIMESHEET SECTION -->
     <section id="timesheet-section" class="space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <button id="btn-add-project" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>Add Project</span>
-        </button>
+        <div class="flex items-center space-x-3">
+          <button id="btn-add-project" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Add Project</span>
+          </button>
+          <div id="timesheet-status-pill" class="text-xs font-bold px-3 py-1.5 rounded-lg border bg-indigo-50 text-indigo-800 border-indigo-200 flex items-center space-x-1.5">
+            <i data-lucide="info" class="w-3.5 h-3.5"></i>
+            <span>Status: Updated days lock on submit; pending days remain editable</span>
+          </div>
+        </div>
 
         <div class="flex flex-wrap items-center gap-3 text-[11px] font-medium text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-          <span class="flex items-center space-x-1.5">
-            <span class="w-3 h-3 rounded bg-emerald-200 border border-emerald-400"></span>
-            <span>Updated Day</span>
-          </span>
-          <span class="flex items-center space-x-1.5">
-            <span class="w-3 h-3 rounded bg-rose-200 border border-rose-400"></span>
-            <span>Not Updated</span>
-          </span>
-          <span class="flex items-center space-x-1.5">
-            <span class="w-3 h-3 rounded bg-amber-200 border border-amber-400"></span>
-            <span>Upcoming</span>
-          </span>
-          <span class="flex items-center space-x-1.5">
-            <span class="w-3 h-3 rounded bg-orange-200 border border-orange-400"></span>
-            <span>Holiday / Flex</span>
-          </span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-updated border"></span><span>Updated Day (Hours &gt; 0)</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-not-updated border"></span><span>Not Updated (Past/Today 0h)</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-upcoming border"></span><span>Upcoming (Future Day)</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-holiday border"></span><span>Holiday / Sunday Off</span></span>
         </div>
       </div>
 
@@ -227,13 +280,13 @@
                 <th class="py-3 px-3 w-12 text-center border-r border-slate-800">S.No</th>
                 <th class="py-3 px-3 w-36 border-r border-slate-800">Project Code</th>
                 <th class="py-3 px-3 w-28 border-r border-slate-800">Month</th>
-                <th class="py-3 px-2 text-center border-r border-slate-800">Mon, 14 Sep</th>
-                <th class="py-3 px-2 text-center border-r border-slate-800">Tue, 15 Sep</th>
-                <th class="py-3 px-2 text-center border-r border-slate-800">Wed, 16 Sep</th>
-                <th class="py-3 px-2 text-center border-r border-slate-800">Thu, 17 Sep</th>
-                <th class="py-3 px-2 text-center border-r border-slate-800">Fri, 18 Sep</th>
-                <th class="py-3 px-2 text-center border-r border-slate-800">Sat, 19 Sep</th>
-                <th class="py-3 px-2 text-center border-r border-slate-800">Sun, 20 Sep</th>
+                <th id="th-day-0" class="py-3 px-2 text-center border-r border-slate-800">Mon</th>
+                <th id="th-day-1" class="py-3 px-2 text-center border-r border-slate-800">Tue</th>
+                <th id="th-day-2" class="py-3 px-2 text-center border-r border-slate-800">Wed</th>
+                <th id="th-day-3" class="py-3 px-2 text-center border-r border-slate-800">Thu</th>
+                <th id="th-day-4" class="py-3 px-2 text-center border-r border-slate-800">Fri</th>
+                <th id="th-day-5" class="py-3 px-2 text-center border-r border-slate-800">Sat</th>
+                <th id="th-day-6" class="py-3 px-2 text-center border-r border-slate-800">Sun</th>
                 <th class="py-3 px-3 w-16 text-center border-r border-slate-800">Total</th>
                 <th class="py-3 px-3 w-20 text-center">Action</th>
               </tr>
@@ -241,22 +294,20 @@
                 <td colspan="3" class="py-2.5 px-3 text-right text-indigo-900 uppercase tracking-wider text-[11px] border-r border-slate-200">
                   Minimum Hours Balance:
                 </td>
-                <td id="target-cell-0" class="py-2 px-1 text-center font-mono border-r border-slate-200 text-slate-500">Holiday</td>
+                <td id="target-cell-0" class="py-2 px-1 text-center font-mono border-r border-slate-200">Holiday</td>
                 <td id="target-cell-1" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
                 <td id="target-cell-2" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
                 <td id="target-cell-3" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
                 <td id="target-cell-4" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
                 <td id="target-cell-5" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
-                <td id="target-cell-6" class="py-2 px-1 text-center font-mono border-r border-slate-200 text-slate-500">0.0</td>
+                <td id="target-cell-6" class="py-2 px-1 text-center font-mono border-r border-slate-200">0.0</td>
                 <td colspan="2" class="border-r border-slate-200"></td>
               </tr>
             </thead>
             <tbody id="timesheet-tbody" class="divide-y divide-slate-200"></tbody>
             <tfoot>
               <tr class="bg-slate-100 text-slate-900 font-bold border-t-2 border-slate-300">
-                <td colspan="3" class="py-3 px-3 text-right uppercase tracking-wider text-[11px] border-r border-slate-200">
-                  Daily Total:
-                </td>
+                <td colspan="3" class="py-3 px-3 text-right uppercase tracking-wider text-[11px] border-r border-slate-200">Daily Total:</td>
                 <td id="tot-day-0" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
                 <td id="tot-day-1" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
                 <td id="tot-day-2" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
@@ -272,270 +323,279 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-end space-x-3 pt-2">
-        <button id="btn-save-draft" class="text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg shadow-sm transition">
-          Save as Draft
-        </button>
-        <button id="btn-submit-timesheet" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg shadow-sm transition">
-          Submit Work Log
-        </button>
+      <div id="timesheet-submit-container" class="flex items-center justify-end space-x-3 pt-2">
+        <button id="btn-save-draft" class="text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg shadow-sm transition">Save as Draft</button>
+        <button id="btn-submit-timesheet" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg shadow-sm transition">Submit Work Log (Lock Updated Days)</button>
       </div>
     </section>
   </main>
 
-  <!-- LOGIN DIALOG -->
-  <div id="modal-login" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-      <div class="bg-slate-900 p-6 text-white text-center">
-        <div class="h-10 w-10 bg-indigo-600 rounded-xl mx-auto flex items-center justify-center font-bold text-white mb-2 shadow-lg shadow-indigo-500/30">
-          <i data-lucide="lock" class="w-5 h-5"></i>
-        </div>
-        <h3 class="text-lg font-bold">Enterprise Authentication</h3>
-        <p class="text-xs text-slate-400">Sign in with your Employee ID / Username</p>
-      </div>
+  <!-- ================= MODALS ================= -->
 
-      <form id="form-login" class="p-6 space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Employee ID</label>
-          <input type="text" id="login-empid" required placeholder="e.g. ADMIN, EMP-1001, EMP-8021" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
-          <input type="password" id="login-password" required placeholder="••••••••" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-
-        <div id="login-error-msg" class="hidden text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg">
-          Invalid Emp ID or password.
-        </div>
-
-        <button type="submit" class="w-full text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg shadow transition">
-          Sign In to Portal
-        </button>
-
-        <div class="pt-2 text-center">
-          <button type="button" id="btn-reset-cache" class="text-[11px] text-slate-400 hover:text-indigo-600 underline">
-            Reset Database to Defaults
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- CREATE / EDIT USER MODAL (Allows Emp ID editing) -->
+  <!-- CREATE / EDIT USER MODAL -->
   <div id="modal-user-form" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-md p-5 space-y-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-md p-5 space-y-4 text-xs animate-in zoom-in duration-150">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h4 id="user-modal-title" class="text-sm font-bold text-slate-800">Edit Employee Account</h4>
-        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <h4 id="user-modal-title" class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+          <i data-lucide="user-plus" class="w-4 h-4 text-indigo-600"></i>
+          <span id="user-modal-title-text">Add New Employee</span>
+        </h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
 
       <form id="form-user-governance" class="space-y-3">
-        <input type="hidden" id="form-user-is-edit" value="false">
         <input type="hidden" id="form-user-original-empid" value="">
-        
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Employee ID (Emp ID - Editable)</label>
-          <input type="text" id="input-user-empid" required placeholder="e.g. EMP-9055" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Employee ID:</label>
+          <input type="text" id="input-user-empid" required placeholder="e.g. EMP-9055" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
-          <input type="text" id="input-user-fullname" required placeholder="Full Name" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Full Name:</label>
+          <input type="text" id="input-user-fullname" required placeholder="e.g. Arun Kumar" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
         </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
-          <input type="text" id="input-user-password" required placeholder="Password" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Password:</label>
+          <input type="text" id="input-user-password" required placeholder="Account password" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Role</label>
-            <select id="input-user-role" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
-              <option value="SUPERVISOR">Supervisor</option>
-              <option value="MONITORING">Monitoring</option>
-              <option value="MANAGER">Manager</option>
-              <option value="USER">User</option>
-            </select>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Work Pattern</label>
-            <select id="input-user-pattern" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
-              <option value="5_DAYS">5 Days (Mon - Fri)</option>
-              <option value="6_DAYS">6 Days (Mon - Sat)</option>
-            </select>
-          </div>
-        </div>
-
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Department</label>
-          <input type="text" id="input-user-dept" required placeholder="Department" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">System Role:</label>
+          <select id="input-user-role" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
+            <option value="SUPERVISOR">Supervisor (Timesheet)</option>
+            <option value="MONITORING">Monitoring (Timesheet)</option>
+            <option value="MANAGER">Manager (Governance)</option>
+            <option value="ADMIN">Admin (Governance &amp; Recycle Bin)</option>
+          </select>
         </div>
-
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Department:</label>
+          <input type="text" id="input-user-dept" required placeholder="e.g. Battery Systems Testing" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
         <div class="pt-2 flex items-center justify-end space-x-2">
-          <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-          <button type="submit" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">
-            Save Changes
-          </button>
+          <button type="button" class="btn-close-modal px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" id="btn-save-user-text" class="font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">Create Account</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ADMIN SELF PROFILE MODAL -->
-  <div id="modal-admin-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+  <!-- USER PROFILE SUMMARY MODAL (ACCESSIBLE TO ALL USERS) -->
+  <div id="modal-user-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div class="flex items-center space-x-2 text-indigo-900">
+          <i data-lucide="user-check" class="w-5 h-5 text-indigo-600"></i>
+          <h3 class="font-bold text-base text-slate-900">User Profile Summary</h3>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+      <div class="space-y-2.5 text-slate-700">
+        <div class="p-3 bg-slate-50 rounded-xl space-y-1.5 border border-slate-100">
+          <p><strong class="text-slate-900">Full Name:</strong> <span id="prof-modal-name">User</span></p>
+          <p><strong class="text-slate-900">Employee ID:</strong> <span id="prof-modal-empid" class="font-mono text-indigo-700">EMP-</span></p>
+          <p><strong class="text-slate-900">System Role:</strong> <span id="prof-modal-role" class="uppercase font-bold text-slate-900">ROLE</span></p>
+          <p><strong class="text-slate-900">Department:</strong> <span id="prof-modal-dept">Operations</span></p>
+          <p><strong class="text-slate-900">Assigned Shift:</strong> <span id="prof-modal-shift">General Shift</span></p>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end">
+        <button type="button" class="btn-close-modal px-4 py-1.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PROFILE EDIT MODAL (ADMIN EXCLUSIVE) -->
+  <div id="modal-admin-self-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs animate-in zoom-in duration-150">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-1.5">
           <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
           <span>Edit Admin Profile</span>
         </h4>
-        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
-
-      <form id="form-admin-profile" class="space-y-3">
+      <form id="form-admin-self-edit" class="space-y-3">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Admin Emp ID</label>
-          <input type="text" id="admin-prof-empid" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Admin Full Name:</label>
+          <input type="text" id="input-admin-name" required class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-indigo-500">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
-          <input type="text" id="admin-prof-name" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Password:</label>
+          <input type="text" id="input-admin-pass" required class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-indigo-500">
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
-          <input type="text" id="admin-prof-password" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-semibold text-slate-600 mb-1">Department:</label>
+          <input type="text" id="input-admin-dept" required class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-indigo-500">
         </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Department</label>
-          <input type="text" id="admin-prof-dept" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <div class="pt-2 flex items-center justify-end space-x-2">
-          <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-          <button type="submit" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">
-            Update Admin Profile
-          </button>
+        <div class="pt-2 flex justify-end space-x-2">
+          <button type="button" class="btn-close-modal px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 bg-indigo-600 text-white font-bold rounded shadow hover:bg-indigo-700">Save Changes</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- EXPORT CONFIGURATION MODAL -->
-  <div id="modal-export" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
-          <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
-          <span>Export Workforce Data</span>
-        </h4>
-        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-4 h-4"></i>
+  <!-- WORK DAYS & COMPANY HOLIDAY CALENDAR MODAL -->
+  <div id="modal-calendar-settings" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto space-y-5 text-xs">
+      
+      <div class="flex items-center justify-between border-b pb-3 sticky top-0 bg-white z-10">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="calendar" class="w-5 h-5 text-amber-600"></i>
+          <div>
+            <h3 class="font-bold text-base text-slate-900">Work Days &amp; Company Holiday Calendar</h3>
+            <p class="text-xs text-slate-500">Configure shift minimums and manage week-wise calendar overrides.</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+
+      <!-- Shift Hours -->
+      <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+        <h4 class="font-bold text-indigo-950 mb-2">Shift Minimum Balance Setting:</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">1st Shift (hrs):</label>
+            <input type="number" step="0.5" id="cfg-shift1-hrs" value="7.5" class="w-full border rounded p-1.5 font-bold bg-white text-indigo-900">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">2nd Shift (hrs):</label>
+            <input type="number" step="0.5" id="cfg-shift2-hrs" value="7.5" class="w-full border rounded p-1.5 font-bold bg-white text-indigo-900">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">3rd Shift (hrs):</label>
+            <input type="number" step="0.5" id="cfg-shift3-hrs" value="6.5" class="w-full border rounded p-1.5 font-bold bg-white text-indigo-900">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">General Shift (hrs):</label>
+            <input type="number" step="0.5" id="cfg-shiftG-hrs" value="7.5" class="w-full border rounded p-1.5 font-bold bg-white text-indigo-900">
+          </div>
+        </div>
+        <div class="flex justify-end mt-2">
+          <button type="button" onclick="saveShiftConfigs()" class="bg-indigo-900 text-white px-3 py-1 rounded text-[11px] font-bold shadow hover:bg-indigo-800">Update Shift Hours</button>
+        </div>
+      </div>
+
+      <!-- Declare Form -->
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3">
+        <h4 class="font-bold text-amber-950" id="calendar-form-heading">Declare Date / Holiday Override:</h4>
+        <input type="hidden" id="calendar-edit-id" value="">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Week:</label>
+            <select id="holiday-input-week" class="w-full border p-2 rounded bg-white font-semibold">
+              <option value="23">Week 23</option>
+              <option value="24">Week 24</option>
+              <option value="25" selected>Week 25</option>
+              <option value="26">Week 26</option>
+              <option value="27">Week 27</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Date:</label>
+            <input type="date" id="holiday-input-date" value="2026-09-14" class="w-full border p-2 rounded bg-white font-semibold">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Category:</label>
+            <select id="holiday-input-type" class="w-full border p-2 rounded bg-white font-semibold">
+              <option value="holiday">Company Holiday (Not in Planned)</option>
+              <option value="sunday">Sunday / Week Off (Not in Planned)</option>
+              <option value="working">Mandatory Working Day (Added to Planned)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Description:</label>
+            <input type="text" id="holiday-input-label" placeholder="e.g. Holiday" value="Holiday" class="w-full border p-2 rounded bg-white font-semibold">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button type="button" id="btn-cancel-cal-edit" onclick="cancelCalendarEdit()" class="hidden px-3 py-1.5 rounded font-bold text-slate-600 hover:bg-amber-100">Cancel Edit</button>
+          <button type="button" id="btn-save-cal-entry" onclick="saveCustomHolidayEntry()" class="bg-amber-700 hover:bg-amber-800 text-white font-bold px-4 py-1.5 rounded shadow">Save Calendar Entry</button>
+        </div>
+      </div>
+
+      <!-- Overrides Listing -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-slate-700">Configured Calendar Overrides:</span>
+          <div class="flex items-center space-x-1.5">
+            <span class="text-slate-500 font-semibold">Filter:</span>
+            <select id="calendar-table-filter" onchange="renderCalendarDeclarationsTable()" class="border border-slate-300 rounded px-2 py-0.5 bg-slate-50 font-semibold">
+              <option value="ALL">All Weeks</option>
+              <option value="23">Week 23</option>
+              <option value="24">Week 24</option>
+              <option value="25" selected>Week 25 (Active)</option>
+              <option value="26">Week 26</option>
+              <option value="27">Week 27</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="border border-slate-200 rounded-xl overflow-x-auto max-h-56 overflow-y-auto">
+          <table class="w-full text-left">
+            <thead class="sticky top-0 bg-slate-100 z-10">
+              <tr class="text-slate-700 font-bold border-b">
+                <th class="p-2.5">Week &amp; Day Details</th>
+                <th class="p-2.5">Type</th>
+                <th class="p-2.5">Description</th>
+                <th class="p-2.5 text-center">Planned Calc Impact</th>
+                <th class="p-2.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="holidays-tbody" class="divide-y divide-slate-100 font-medium"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2 border-t">
+        <button type="button" class="btn-close-modal px-4 py-1.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition">
+          Done
         </button>
       </div>
 
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Export Range Scope</label>
-          <select id="export-scope-type" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
-            <option value="WEEK">Export by Specific Week</option>
-            <option value="MONTH">Export by Specific Month</option>
-          </select>
-        </div>
-        <div id="export-week-selector-container">
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Select Week</label>
-          <select id="export-week-val" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
-            <option value="Week_25">Week 25 (Current)</option>
-            <option value="Week_24">Week 24</option>
-            <option value="Week_23">Week 23</option>
-          </select>
-        </div>
-        <div id="export-month-selector-container" class="hidden">
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Select Month</label>
-          <select id="export-month-val" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
-            <option value="September_2026">September 2026</option>
-            <option value="August_2026">August 2026</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="pt-2 flex items-center justify-end space-x-2">
-        <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-        <button id="btn-confirm-export" class="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow transition flex items-center space-x-1.5">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span>Download CSV</span>
-        </button>
-      </div>
     </div>
   </div>
 
-  <!-- ADD PROJECT MODAL -->
-  <div id="modal-add-project" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h4 class="text-sm font-bold text-slate-800">Add Project</h4>
-        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+  <!-- LOGIN MODAL -->
+  <div id="modal-login" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div class="bg-slate-900 p-6 text-white text-center">
+        <div class="h-10 w-10 bg-indigo-600 rounded-xl mx-auto flex items-center justify-center font-bold text-white mb-2 shadow-lg">
+          <i data-lucide="lock" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-bold">Enterprise Cloud Authentication</h3>
       </div>
-      <form id="form-add-project" class="space-y-3">
+      <form id="form-login" class="p-6 space-y-4 text-xs">
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Project Code</label>
-          <input type="text" id="input-new-project-code" required placeholder="e.g. N603-V2" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono uppercase text-slate-800 focus:ring-2 focus:ring-indigo-500">
+          <label class="block font-bold text-slate-700 uppercase mb-1">Employee ID</label>
+          <input type="text" id="login-empid" required placeholder="e.g. ADMIN, EMP-1001" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
-        <div class="pt-2 flex items-center justify-end space-x-2">
-          <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-          <button type="submit" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">Add Row</button>
+        <div>
+          <label class="block font-bold text-slate-700 uppercase mb-1">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
+        <div id="login-error-msg" class="hidden text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg">Invalid Emp ID or password.</div>
+        <button type="submit" class="w-full font-bold bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg shadow transition">Sign In</button>
       </form>
     </div>
   </div>
 
-  <!-- DELETE REASON MODAL -->
-  <div id="modal-delete-user" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
-      <div class="flex items-center space-x-2 text-rose-600">
-        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-        <h4 class="text-sm font-bold">Confirm Account Removal</h4>
-      </div>
-      <p class="text-xs text-slate-600">
-        Moving account <strong id="delete-target-empid" class="font-mono text-slate-800"></strong> to Recycle Bin.
-      </p>
-      <div>
-        <label class="block text-xs font-semibold text-slate-600 mb-1">Mandatory Deletion Reason</label>
-        <textarea id="delete-reason" required rows="2" placeholder="e.g. Contract ended" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-rose-500"></textarea>
-      </div>
-      <div class="flex items-center justify-end space-x-2 pt-2">
-        <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-        <button id="btn-confirm-delete-user" class="text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg shadow transition">Move to Bin</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- RECYCLE BIN MODAL -->
+  <!-- ADMIN RECYCLE BIN MODAL -->
   <div id="modal-recycle-bin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl p-5 space-y-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl p-5 space-y-4 text-xs">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
           <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
-          <span>Admin Recycle Bin & Audit Logs</span>
+          <span>Admin Recycle Bin &amp; Audit Logs</span>
         </h4>
-        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="max-h-64 overflow-y-auto">
-        <table class="w-full text-left text-xs text-slate-700">
+        <table class="w-full text-left">
           <thead class="bg-slate-50 text-slate-600 uppercase font-semibold">
             <tr>
               <th class="px-3 py-2">Emp ID</th>
               <th class="px-3 py-2">Name</th>
-              <th class="px-3 py-2">Deletion Reason</th>
+              <th class="px-3 py-2">Reason</th>
               <th class="px-3 py-2 text-right">Actions</th>
             </tr>
           </thead>
@@ -545,66 +605,122 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- ADD PROJECT MODAL -->
+  <div id="modal-add-project" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-sm font-bold text-slate-800">Add Project Assignment</h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <form id="form-add-project" class="space-y-3">
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Project Code</label>
+          <input type="text" id="input-new-project-code" required placeholder="e.g. N603-V2, P-8901" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 uppercase">
+        </div>
+        <div class="pt-2 flex items-center justify-end space-x-2">
+          <button type="button" class="btn-close-modal px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">Add Row</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EXPORT MODAL -->
+  <div id="modal-export" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b pb-3">
+        <h4 class="text-sm font-bold text-slate-800">Export Workforce Data</h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Scope</label>
+          <select id="export-scope-type" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium">
+            <option value="WEEK">Specific Week</option>
+            <option value="MONTH">Full Month</option>
+          </select>
+        </div>
+        <div id="export-week-selector-container">
+          <label class="block font-semibold text-slate-600 mb-1">Select Week</label>
+          <select id="export-week-val" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium">
+            <option value="Week_23">Week 23</option>
+            <option value="Week_24">Week 24</option>
+            <option value="Week_25">Week 25</option>
+            <option value="Week_26">Week 26</option>
+            <option value="Week_27">Week 27</option>
+          </select>
+        </div>
+      </div>
+      <div class="pt-2 flex items-center justify-end space-x-2">
+        <button type="button" class="btn-close-modal px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button id="btn-confirm-export" class="font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow transition">Download CSV</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="mt-auto bg-white border-t border-slate-200 py-3 px-4 sm:px-6">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
-      <div>
-        <span>&copy; 2026 Surya M R. All rights reserved.</span>
-      </div>
+      <div><span>&copy; 2026 Surya M R. All rights reserved.</span></div>
       <div class="flex items-center space-x-4">
         <span class="inline-flex items-center space-x-1">
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           <span class="text-[11px]">System Online</span>
         </span>
-        <span class="text-[11px] font-mono text-slate-400">v4.9.1-ent</span>
+        <span class="text-[11px] font-mono text-slate-400">v7.5.0-enterprise</span>
       </div>
     </div>
   </footer>
 
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-Smz1pmpzjWS2CE0O5y5I5KBLI07771E",
+      authDomain: "workforce-e906b.firebaseapp.com",
+      projectId: "workforce-e906b",
+      storageBucket: "workforce-e906b.firebasestorage.app",
+      messagingSenderId: "709575512696",
+      appId: "1:709575512696:web:c2b124fbc590d8ed36938d",
+      measurementId: "G-GZXY7H5ZPC"
+    };
+
+    let db = null;
+    let isCloudConnected = false;
+
+    try {
+      if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        firebase.analytics();
+        isCloudConnected = true;
+      }
+    } catch (e) {
+      console.warn("Offline mode active.", e);
+    }
+
     const DEFAULT_USERS = [
-      { empId: 'ADMIN', name: 'System Root Admin', role: 'ADMIN', password: 'admin123', dept: 'Executive Governance', pattern: '6_DAYS', isProtected: true },
-      { empId: 'EMP-1001', name: 'D Sandeepkumar', role: 'MANAGER', password: 'mgr123', dept: 'Operations & Engineering', pattern: '6_DAYS' },
-      { empId: 'EMP-8021', name: 'Surya Ramachandran', role: 'SUPERVISOR', password: 'super123', dept: 'Battery Systems Testing', pattern: '5_DAYS' },
-      { empId: 'EMP-8045', name: 'Priya Sharma', role: 'MONITORING', password: 'mon123', dept: 'Quality & Field Dynamics', pattern: '6_DAYS' },
-      { empId: 'EMP-9102', name: 'Rajesh Kumar', role: 'USER', password: 'user123', dept: 'Plant Line Assembly', pattern: '5_DAYS' }
+      { empId: 'ADMIN', name: 'System Root Admin', role: 'ADMIN', password: 'admin123', dept: 'Executive Governance', isProtected: true },
+      { empId: 'EMP-1001', name: 'D Sandeepkumar', role: 'MANAGER', password: 'mgr123', dept: 'Operations & Engineering' },
+      { empId: 'EMP-8021', name: 'Surya Ramachandran', role: 'SUPERVISOR', password: 'super123', dept: 'Battery Systems Testing' },
+      { empId: 'EMP-8045', name: 'Priya Sharma', role: 'MONITORING', password: 'mon123', dept: 'Quality & Field Dynamics' }
     ];
 
     const DEFAULT_PROJECTS = {
-      'EMP-8021': [
-        { code: 'N603-V2', hours: [0, 7.5, 7.5, 7.5, 7.5, 0, 0] },
-        { code: 'U769M', hours: [0, 0, 0, 0, 0, 0, 0] }
-      ],
-      'EMP-8045': [
-        { code: 'EV-BAT-CELL', hours: [0, 7.5, 7.5, 7.5, 7.5, 7.5, 0] }
-      ],
-      'EMP-9102': [
-        { code: 'PLANT-MAINT', hours: [0, 7.5, 7.5, 0, 0, 0, 0] }
-      ]
+      'EMP-8021': {
+        '25': [
+          { code: 'N603-V2', hours: [0, 7.5, 7.5, 7.5, 7.5, 0, 0] },
+          { code: 'U769M', hours: [0, 0, 0, 0, 0, 0, 0] }
+        ]
+      },
+      'EMP-8045': {
+        '25': [
+          { code: 'EV-BAT-CELL', hours: [0, 7.5, 7.5, 7.5, 7.5, 7.5, 0] }
+        ]
+      }
     };
 
-    let state = {
-      currentUser: null,
-      users: JSON.parse(localStorage.getItem('ent_users_v2')) || DEFAULT_USERS,
-      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v2')) || [],
-      userProjects: JSON.parse(localStorage.getItem('ent_projects_v2')) || DEFAULT_PROJECTS,
-      activeShift: 'GENERAL',
-      selectedWeek: '25',
-      currentMonth: 'September-2026',
-      deleteCandidateEmpId: null
-    };
-
-    const legacyAdminIndex = state.users.findIndex(u => u.empId === 'EMP-ADMIN-TOP');
-    if (legacyAdminIndex !== -1) {
-      state.users[legacyAdminIndex].empId = 'ADMIN';
-      saveState();
-    }
-
-    function saveState() {
-      localStorage.setItem('ent_users_v2', JSON.stringify(state.users));
-      localStorage.setItem('ent_recycle_v2', JSON.stringify(state.recycleBin));
-      localStorage.setItem('ent_projects_v2', JSON.stringify(state.userProjects));
-    }
+    const DEFAULT_CALENDAR_HOLIDAYS = [
+      { id: "cal_1", week: "25", date: "2026-09-14", dayCol: 0, dayName: "Mon, 14 Sep", type: "holiday", label: "Holiday" },
+      { id: "cal_2", week: "25", date: "2026-09-20", dayCol: 6, dayName: "Sun, 20 Sep", type: "sunday", label: "Sunday Weekly Off" }
+    ];
 
     const SHIFTS = {
       'GENERAL': { label: 'General Shift', targetWeekday: 7.5 },
@@ -613,16 +729,143 @@
       '3RD': { label: '3rd Shift', targetWeekday: 6.5 }
     };
 
+    let state = {
+      currentUser: null,
+      users: JSON.parse(localStorage.getItem('ent_users_v35')) || DEFAULT_USERS,
+      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v35')) || [],
+      userProjects: JSON.parse(localStorage.getItem('ent_projects_v35')) || DEFAULT_PROJECTS,
+      lockedDays: JSON.parse(localStorage.getItem('ent_locked_days_v35')) || {},
+      calendarHolidays: JSON.parse(localStorage.getItem('ent_calendar_v35')) || DEFAULT_CALENDAR_HOLIDAYS,
+      shiftConfigs: JSON.parse(localStorage.getItem('ent_shifts_v35')) || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 },
+      activeShift: 'GENERAL',
+      selectedWeek: '25',
+      currentMonth: 'September-2026'
+    };
+
+    let efficiencyChartInstance = null;
+
+    function getWeekDates(weekNum, year = 2026) {
+      const jan4 = new Date(year, 0, 4);
+      const dayOffset = (jan4.getDay() === 0 ? 7 : jan4.getDay()) - 1;
+      const week1Mon = new Date(year, 0, 4 - dayOffset);
+
+      const targetMon = new Date(week1Mon.getTime() + (parseInt(weekNum) - 1) * 7 * 86400000);
+      const days = [];
+      const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const fullMonthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(targetMon.getTime() + i * 86400000);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        days.push({
+          dayCol: i,
+          dateStr: `${yyyy}-${mm}-${dd}`,
+          dayLabel: `${dayNames[i]}, ${d.getDate()} ${monthNames[d.getMonth()]}`
+        });
+      }
+
+      const thursDate = new Date(targetMon.getTime() + 3 * 86400000);
+      const monthStr = `${fullMonthNames[thursDate.getMonth()]}-${thursDate.getFullYear()}`;
+
+      return { days, monthStr, mondayDate: days[0].dateStr };
+    }
+
+    function saveState() {
+      localStorage.setItem('ent_users_v35', JSON.stringify(state.users));
+      localStorage.setItem('ent_recycle_v35', JSON.stringify(state.recycleBin));
+      localStorage.setItem('ent_projects_v35', JSON.stringify(state.userProjects));
+      localStorage.setItem('ent_locked_days_v35', JSON.stringify(state.lockedDays));
+      localStorage.setItem('ent_calendar_v35', JSON.stringify(state.calendarHolidays));
+      localStorage.setItem('ent_shifts_v35', JSON.stringify(state.shiftConfigs));
+
+      if (isCloudConnected && db) {
+        db.collection("enterprise_workforce").doc("portal_state").set({
+          users: state.users,
+          recycleBin: state.recycleBin,
+          userProjects: state.userProjects,
+          lockedDays: state.lockedDays,
+          calendarHolidays: state.calendarHolidays,
+          shiftConfigs: state.shiftConfigs,
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => updateSyncBadge(true))
+          .catch(err => {
+            console.error("Cloud error:", err);
+            updateSyncBadge(false);
+          });
+      }
+    }
+
+    function updateSyncBadge(connected) {
+      const badge = document.getElementById('sync-status-badge');
+      if (!badge) return;
+      if (connected) {
+        badge.className = "hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-semibold";
+        badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Cloud Synced</span>';
+      } else {
+        badge.className = "hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-[10px] font-semibold";
+        badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span><span>Offline Mode</span>';
+      }
+    }
+
+    function showToast(message, type = 'success') {
+      const banner = document.getElementById('toast-banner');
+      const msg = document.getElementById('toast-message');
+      const icon = document.getElementById('toast-icon');
+
+      msg.textContent = message;
+      if (type === 'success') {
+        banner.className = 'rounded-lg p-3 text-xs font-semibold flex items-center justify-between shadow-sm bg-emerald-50 text-emerald-800 border border-emerald-200';
+        icon.setAttribute('data-lucide', 'check-circle-2');
+      } else if (type === 'error') {
+        banner.className = 'rounded-lg p-3 text-xs font-semibold flex items-center justify-between shadow-sm bg-rose-50 text-rose-800 border border-rose-200';
+        icon.setAttribute('data-lucide', 'alert-circle');
+      } else {
+        banner.className = 'rounded-lg p-3 text-xs font-semibold flex items-center justify-between shadow-sm bg-indigo-50 text-indigo-800 border border-indigo-200';
+        icon.setAttribute('data-lucide', 'info');
+      }
+      banner.classList.remove('hidden');
+      lucide.createIcons();
+      setTimeout(() => banner.classList.add('hidden'), 4000);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupEventListeners();
+
+      if (isCloudConnected && db) {
+        db.collection("enterprise_workforce").doc("portal_state").onSnapshot(doc => {
+          if (doc.exists) {
+            const data = doc.data();
+            state.users = data.users || DEFAULT_USERS;
+            state.recycleBin = data.recycleBin || [];
+            state.userProjects = data.userProjects || DEFAULT_PROJECTS;
+            state.lockedDays = data.lockedDays || {};
+            state.calendarHolidays = data.calendarHolidays || DEFAULT_CALENDAR_HOLIDAYS;
+            state.shiftConfigs = data.shiftConfigs || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 };
+            updateSyncBadge(true);
+
+            if (state.currentUser) {
+              const fresh = state.users.find(u => u.empId.toUpperCase() === state.currentUser.empId.toUpperCase());
+              if (fresh) {
+                state.currentUser = fresh;
+                if (fresh.role === 'MANAGER' || fresh.role === 'ADMIN') renderGovernanceView();
+                else renderTimesheetGrid();
+              }
+            }
+          }
+        });
+      }
+
       checkAuth();
     });
 
     function checkAuth() {
       const savedEmpId = localStorage.getItem('ent_logged_empid');
       if (savedEmpId) {
-        const found = state.users.find(u => u.empId === savedEmpId);
+        const found = state.users.find(u => u.empId.toUpperCase() === savedEmpId.toUpperCase());
         if (found) {
           authenticateUser(found);
           return;
@@ -643,12 +886,15 @@
       document.getElementById('nav-user-name').textContent = user.name;
       document.getElementById('dropdown-user-id').textContent = `${user.empId} (${user.role})`;
 
-      const adminBtn = document.getElementById('btn-edit-admin-profile');
-      if (user.role === 'ADMIN') {
-        adminBtn.classList.remove('hidden');
-      } else {
-        adminBtn.classList.add('hidden');
+      const isExecutive = (user.role === 'MANAGER' || user.role === 'ADMIN');
+      const isAdmin = (user.role === 'ADMIN');
+
+      const adminEditBtn = document.getElementById('btn-edit-admin-profile');
+      if (adminEditBtn) {
+        adminEditBtn.classList.toggle('hidden', !isAdmin);
       }
+
+      document.getElementById('btn-open-recycle-bin').classList.toggle('hidden', !isAdmin);
 
       const badgeContainer = document.getElementById('role-badge-container');
       badgeContainer.innerHTML = `
@@ -660,15 +906,10 @@
         }">${user.role}</span>
       `;
 
-      if (user.role === 'MANAGER' || user.role === 'ADMIN') {
+      if (isExecutive) {
         document.getElementById('governance-container').classList.remove('hidden');
         document.getElementById('timesheet-section').classList.add('hidden');
         document.getElementById('efficiency-metric-card').classList.add('hidden');
-        if (user.role === 'ADMIN') {
-          document.getElementById('btn-open-recycle-bin').classList.remove('hidden');
-        } else {
-          document.getElementById('btn-open-recycle-bin').classList.add('hidden');
-        }
         renderGovernanceView();
       } else {
         document.getElementById('governance-container').classList.add('hidden');
@@ -679,19 +920,99 @@
       lucide.createIcons();
     }
 
+    function getUserWeekProjects(empId, weekNum) {
+      if (!state.userProjects[empId]) {
+        state.userProjects[empId] = {};
+      }
+      if (Array.isArray(state.userProjects[empId])) {
+        const existingRows = state.userProjects[empId];
+        state.userProjects[empId] = { '25': existingRows };
+      }
+      if (!state.userProjects[empId][weekNum]) {
+        state.userProjects[empId][weekNum] = [
+          { code: 'PROJECT-01', hours: [0, 0, 0, 0, 0, 0, 0] }
+        ];
+      }
+      return state.userProjects[empId][weekNum];
+    }
+
+    function calculateCalendarEfficiency(dayTotals, targetHours, weekNumber) {
+      const activeWeek = String(weekNumber || state.selectedWeek);
+      let activeDays = new Set([0, 1, 2, 3, 4, 5]);
+
+      state.calendarHolidays.forEach(h => {
+        if (String(h.week) === activeWeek) {
+          if (h.type === 'holiday' || h.type === 'sunday') {
+            activeDays.delete(h.dayCol);
+          } else if (h.type === 'working') {
+            activeDays.add(h.dayCol);
+          }
+        }
+      });
+
+      const activeDaysList = Array.from(activeDays);
+      const plannedTarget = activeDaysList.length * targetHours;
+
+      let actualLogged = 0;
+      activeDaysList.forEach(dIdx => {
+        actualLogged += dayTotals[dIdx];
+      });
+
+      const efficiency = plannedTarget > 0 ? ((actualLogged / plannedTarget) * 100).toFixed(1) : 0;
+
+      return {
+        plannedTarget,
+        actualLogged,
+        efficiency: parseFloat(efficiency),
+        activeDaysList
+      };
+    }
+
+    function getDayStatusClass(dayIdx, dayTotal, dateStr, weekNumber) {
+      const calHoliday = state.calendarHolidays.find(x => String(x.week) === String(weekNumber) && x.dayCol === dayIdx);
+      if (calHoliday && (calHoliday.type === 'holiday' || calHoliday.type === 'sunday')) {
+        return 'col-holiday';
+      }
+      if (dayIdx === 6 && (!calHoliday || calHoliday.type !== 'working')) {
+        return 'col-holiday';
+      }
+
+      if (dayTotal > 0) {
+        return 'col-updated';
+      }
+
+      const today = new Date();
+      const todayYYYY = today.getFullYear();
+      const todayMM = String(today.getMonth() + 1).padStart(2, '0');
+      const todayDD = String(today.getDate()).padStart(2, '0');
+      const todayStr = `${todayYYYY}-${todayMM}-${todayDD}`;
+
+      if (dateStr > todayStr) {
+        return 'col-upcoming';
+      } else {
+        return 'col-not-updated';
+      }
+    }
+
     function renderTimesheetGrid() {
       const user = state.currentUser;
       if (!user) return;
 
-      const shiftConfig = SHIFTS[state.activeShift];
-      const targetHours = shiftConfig.targetWeekday;
+      const weekMeta = getWeekDates(state.selectedWeek);
+      state.currentMonth = weekMeta.monthStr;
+      
+      const monthDisplay = document.getElementById('display-month');
+      if (monthDisplay) monthDisplay.textContent = weekMeta.monthStr;
 
-      if (!state.userProjects[user.empId]) {
-        state.userProjects[user.empId] = [{ code: 'PROJECT-01', hours: [0, 0, 0, 0, 0, 0, 0] }];
-        saveState();
-      }
+      weekMeta.days.forEach(d => {
+        const th = document.getElementById(`th-day-${d.dayCol}`);
+        if (th) th.textContent = d.dayLabel;
+      });
 
-      const rows = state.userProjects[user.empId];
+      const targetHours = state.shiftConfigs[state.activeShift] || SHIFTS[state.activeShift].targetWeekday;
+      const weekLocked = (state.lockedDays[user.empId] && state.lockedDays[user.empId][state.selectedWeek]) || [];
+
+      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
       const dayTotals = [0, 0, 0, 0, 0, 0, 0];
 
       rows.forEach(r => {
@@ -702,141 +1023,554 @@
 
       for (let d = 0; d < 7; d++) {
         const cell = document.getElementById(`target-cell-${d}`);
-        if (d === 0) cell.textContent = 'Holiday';
-        else if (d === 6) cell.textContent = '0.0';
-        else if (d === 5 && user.pattern === '5_DAYS') cell.textContent = '0.0';
-        else cell.textContent = targetHours.toFixed(1);
+        if (!cell) continue;
+        const holidayRule = state.calendarHolidays.find(h => String(h.week) === String(state.selectedWeek) && h.dayCol === d);
+        if (holidayRule && (holidayRule.type === 'holiday' || holidayRule.type === 'sunday')) {
+          cell.textContent = holidayRule.type === 'holiday' ? 'Holiday' : '0.0';
+          cell.className = "py-2 px-1 text-center font-mono border-r border-slate-200 col-holiday font-bold text-xs";
+        } else if (d === 6) {
+          const isMandatoryWorkSun = state.calendarHolidays.some(h => String(h.week) === String(state.selectedWeek) && h.dayCol === 6 && h.type === 'working');
+          cell.textContent = isMandatoryWorkSun ? targetHours.toFixed(1) : '0.0';
+          cell.className = isMandatoryWorkSun ? "py-2 px-1 text-center font-mono border-r border-slate-200" : "py-2 px-1 text-center font-mono border-r border-slate-200 col-holiday font-bold text-xs";
+        } else {
+          cell.textContent = targetHours.toFixed(1);
+          cell.className = "py-2 px-1 text-center font-mono border-r border-slate-200";
+        }
       }
 
       const dayClasses = dayTotals.map((tot, idx) => {
-        if (tot > 0) return 'col-updated';
-        if (idx === 0 || idx === 6) return 'col-holiday';
-        if (idx === 5 && user.pattern === '5_DAYS') return 'col-holiday';
-        if (idx >= 4) return 'col-upcoming';
-        return 'col-not-updated';
+        const dMeta = weekMeta.days[idx];
+        return getDayStatusClass(idx, tot, dMeta.dateStr, state.selectedWeek);
       });
 
       const tbody = document.getElementById('timesheet-tbody');
-      tbody.innerHTML = rows.map((r, rIdx) => {
-        const rowSum = r.hours.reduce((a, b) => a + (parseFloat(b) || 0), 0);
-        return `
-          <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-            <td class="py-2.5 px-3 text-center font-mono text-slate-500 border-r border-slate-200">${rIdx + 1}</td>
-            <td class="py-2 px-2 border-r border-slate-200">
-              <input type="text" value="${r.code}" onchange="updateProjectCode('${rIdx}', this.value)" class="w-full text-xs font-mono font-semibold bg-transparent border-b border-dashed border-slate-300 focus:border-indigo-500 focus:outline-none uppercase text-slate-800">
-            </td>
-            <td class="py-2 px-3 text-slate-600 border-r border-slate-200">${state.currentMonth}</td>
-            ${r.hours.map((h, dIdx) => `
-              <td class="p-1 border-r border-slate-200 ${dayClasses[dIdx]} text-center">
-                <input type="number" step="0.5" min="0" max="24" value="${h === 0 ? '' : h}" placeholder="0.0" 
-                  onchange="updateCellHour('${rIdx}',${dIdx}, this.value)" 
-                  class="w-14 text-center text-xs font-mono font-medium py-1 rounded bg-white/70 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      if (tbody) {
+        tbody.innerHTML = rows.map((r, rIdx) => {
+          const rowSum = r.hours.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+          return `
+            <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+              <td class="py-2.5 px-3 text-center font-mono text-slate-500 border-r border-slate-200">${rIdx + 1}</td>
+              <td class="py-2 px-2 border-r border-slate-200">
+                <input type="text" value="${r.code}" onchange="updateProjectCode('${rIdx}', this.value)" class="w-full text-xs font-mono font-semibold bg-transparent border-b border-dashed border-slate-300 focus:border-indigo-500 focus:outline-none uppercase text-slate-800">
               </td>
-            `).join('')}
-            <td class="py-2 px-2 text-center font-mono font-bold text-slate-900 border-r border-slate-200">${rowSum.toFixed(1)}</td>
-            <td class="py-2 px-2 text-center">
-              <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1">
-                <i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+              <td class="py-2 px-3 text-slate-600 border-r border-slate-200">${state.currentMonth}</td>
+              
+              ${r.hours.map((h, dIdx) => {
+                const isDayLocked = weekLocked.includes(dIdx);
+                const isCalHoliday = state.calendarHolidays.some(x => String(x.week) === String(state.selectedWeek) && x.dayCol === dIdx && (x.type === 'holiday' || x.type === 'sunday'));
+                const isSundayOff = (dIdx === 6 && !state.calendarHolidays.some(x => String(x.week) === String(state.selectedWeek) && x.dayCol === 6 && x.type === 'working'));
+
+                if (isCalHoliday || isSundayOff) {
+                  return `
+                    <td class="p-1 border-r border-slate-200 ${dayClasses[dIdx]} font-bold text-center">
+                      <span class="inline-block py-1 px-1.5 text-[10px] uppercase font-extrabold text-orange-900">Holiday/Off</span>
+                    </td>
+                  `;
+                }
+
+                return `
+                  <td class="p-1 border-r border-slate-200 ${dayClasses[dIdx]} text-center relative">
+                    <input type="number" step="0.5" min="0" max="24" value="${h === 0 ? '' : h}" placeholder="0.0" 
+                      ${isDayLocked ? 'disabled' : ''}
+                      onchange="updateCellHour('${rIdx}', ${dIdx}, this.value)" 
+                      class="w-14 text-center text-xs font-mono font-medium py-1 rounded bg-white/70 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500 ${isDayLocked ? 'opacity-60 cursor-not-allowed bg-amber-50' : ''}">
+                    ${isDayLocked ? '<span class="absolute top-0 right-0 text-[8px] font-bold text-amber-700 px-0.5">🔒</span>' : ''}
+                  </td>
+                `;
+              }).join('')}
+
+              <td class="py-2 px-2 text-center font-mono font-bold text-slate-900 border-r border-slate-200">${rowSum.toFixed(1)}</td>
+              <td class="py-2 px-2 text-center">
+                <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1">
+                  <i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
 
       dayTotals.forEach((tot, idx) => {
         const td = document.getElementById(`tot-day-${idx}`);
-        td.textContent = tot.toFixed(1);
-        td.className = `py-2.5 px-1 text-center font-mono font-bold border-r border-slate-200 ${dayClasses[idx]}`;
+        if (td) {
+          td.textContent = tot.toFixed(1);
+          td.className = `py-2.5 px-1 text-center font-mono font-bold border-r border-slate-200 ${dayClasses[idx]}`;
+        }
       });
 
       const grandTotal = dayTotals.reduce((a, b) => a + b, 0);
-      document.getElementById('tot-grand-total').textContent = grandTotal.toFixed(1);
+      const grandEl = document.getElementById('tot-grand-total');
+      if (grandEl) grandEl.textContent = grandTotal.toFixed(1);
 
-      const plannedWeeklyHours = user.pattern === '5_DAYS' ? (targetHours * 5) : (targetHours * 6);
-      const efficiency = plannedWeeklyHours > 0 ? ((grandTotal / plannedWeeklyHours) * 100).toFixed(1) : 0;
+      const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
 
-      document.getElementById('kpi-planned').textContent = `${plannedWeeklyHours.toFixed(1)} hrs`;
-      document.getElementById('kpi-actual').textContent = `${grandTotal.toFixed(1)} hrs`;
+      const kpiPlanned = document.getElementById('kpi-planned');
+      if (kpiPlanned) kpiPlanned.textContent = `${metrics.plannedTarget.toFixed(1)} hrs`;
+
+      const kpiActual = document.getElementById('kpi-actual');
+      if (kpiActual) kpiActual.textContent = `${metrics.actualLogged.toFixed(1)} hrs`;
+
       const kpiEff = document.getElementById('kpi-efficiency');
-      kpiEff.textContent = `${efficiency}%`;
-
-      if (efficiency >= 100) kpiEff.className = 'text-sm font-bold text-emerald-600 font-mono';
-      else if (efficiency >= 85) kpiEff.className = 'text-sm font-bold text-indigo-600 font-mono';
-      else kpiEff.className = 'text-sm font-bold text-rose-600 font-mono';
+      if (kpiEff) {
+        kpiEff.textContent = `${metrics.efficiency}%`;
+        if (metrics.efficiency >= 100) kpiEff.className = 'text-sm font-bold text-emerald-600 font-mono';
+        else if (metrics.efficiency >= 85) kpiEff.className = 'text-sm font-bold text-indigo-600 font-mono';
+        else kpiEff.className = 'text-sm font-bold text-rose-600 font-mono';
+      }
 
       lucide.createIcons();
     }
 
     window.updateCellHour = (rIdx, dIdx, val) => {
-      state.userProjects[state.currentUser.empId][rIdx].hours[dIdx] = parseFloat(val) || 0;
+      const user = state.currentUser;
+      const weekLocked = (state.lockedDays[user.empId] && state.lockedDays[user.empId][state.selectedWeek]) || [];
+      if (weekLocked.includes(dIdx)) {
+        showToast('This work day has been submitted and locked.', 'error');
+        return;
+      }
+      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+      rows[rIdx].hours[dIdx] = parseFloat(val) || 0;
       saveState();
       renderTimesheetGrid();
     };
 
     window.updateProjectCode = (rIdx, val) => {
-      state.userProjects[state.currentUser.empId][rIdx].code = val.trim().toUpperCase() || 'PROJECT';
+      const user = state.currentUser;
+      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+      rows[rIdx].code = val.trim().toUpperCase() || 'PROJECT';
       saveState();
     };
 
     window.deleteProjectRow = (rIdx) => {
-      state.userProjects[state.currentUser.empId].splice(rIdx, 1);
+      const user = state.currentUser;
+      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+      if (rows.length <= 1) {
+        showToast('At least one project row is required.', 'error');
+        return;
+      }
+      rows.splice(rIdx, 1);
       saveState();
       renderTimesheetGrid();
     };
 
+    // FIXED: SAFE NULL-CHECKED GOVERNANCE RENDER (ELIMINATES TypeError ON TEXTCONTENT)
     function renderGovernanceView() {
-      const shiftConfig = SHIFTS[state.activeShift];
-      const targetHours = shiftConfig.targetWeekday;
-      const activeEmployees = state.users.filter(u => !u.isProtected && u.role !== 'ADMIN');
+      const weekMeta = getWeekDates(state.selectedWeek);
+      state.currentMonth = weekMeta.monthStr;
+      
+      const monthDisplay = document.getElementById('display-month');
+      if (monthDisplay) monthDisplay.textContent = weekMeta.monthStr;
+
+      const targetHours = state.shiftConfigs[state.activeShift] || SHIFTS[state.activeShift].targetWeekday;
+      const efficiencyEmployees = state.users.filter(u => !u.isProtected && u.role !== 'ADMIN' && u.role !== 'MANAGER');
+      const allGovernanceUsers = state.users.filter(u => !u.isProtected);
+
+      // Safe update for user-count-badge
+      const userCountBadge = document.getElementById('user-count-badge');
+      if (userCountBadge) {
+        userCountBadge.textContent = `${allGovernanceUsers.length} Accounts Managed`;
+      }
+
+      const chartWeekBadge = document.getElementById('chart-week-badge');
+      if (chartWeekBadge) {
+        chartWeekBadge.textContent = `Week ${state.selectedWeek} (${weekMeta.monthStr})`;
+      }
+
+      const tableWeekHeading = document.getElementById('table-week-heading');
+      if (tableWeekHeading) {
+        tableWeekHeading.textContent = `Team Work Efficiency Matrix (Week ${state.selectedWeek})`;
+      }
+
+      let chartLabels = [];
+      let chartEfficiencies = [];
 
       const effTbody = document.getElementById('efficiency-matrix-tbody');
-      effTbody.innerHTML = activeEmployees.map(emp => {
-        const rows = state.userProjects[emp.empId] || [];
-        let actualHours = 0;
-        rows.forEach(r => r.hours.forEach(h => actualHours += parseFloat(h) || 0));
+      if (effTbody) {
+        effTbody.innerHTML = efficiencyEmployees.map(emp => {
+          const rows = getUserWeekProjects(emp.empId, state.selectedWeek);
+          const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+          rows.forEach(r => r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0));
 
-        const planned = emp.pattern === '5_DAYS' ? (targetHours * 5) : (targetHours * 6);
-        const eff = planned > 0 ? ((actualHours / planned) * 100).toFixed(1) : 0;
+          const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
+          const weekLocked = (state.lockedDays[emp.empId] && state.lockedDays[emp.empId][state.selectedWeek]) || [];
 
-        return `
+          chartLabels.push(emp.name);
+          chartEfficiencies.push(metrics.efficiency);
+
+          return `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
+              <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
+              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${emp.role}</span></td>
+              <td class="px-4 py-3 text-center font-mono text-slate-600">${metrics.plannedTarget.toFixed(1)} hrs</td>
+              <td class="px-4 py-3 text-center font-mono font-bold text-slate-800">${metrics.actualLogged.toFixed(1)} hrs</td>
+              <td class="px-4 py-3 text-center font-mono font-bold ${metrics.efficiency >= 100 ? 'text-emerald-600' : 'text-amber-600'}">${metrics.efficiency}%</td>
+              <td class="px-4 py-3 text-center">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${weekLocked.length > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">
+                  ${weekLocked.length > 0 ? `${weekLocked.length} Day(s) Locked` : 'Editable'}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-right">
+                ${weekLocked.length > 0 ? `
+                  <button onclick="window.unlockAllDaysForEmployee('${emp.empId}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded font-semibold transition text-xs">Unlock</button>
+                ` : `<span class="text-[11px] text-slate-400">Open</span>`}
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const govTbody = document.getElementById('user-governance-tbody');
+      if (govTbody) {
+        govTbody.innerHTML = allGovernanceUsers.map(emp => `
           <tr class="hover:bg-slate-50 transition">
             <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
             <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
-            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${emp.role}</span></td>
-            <td class="px-4 py-3 text-slate-600">${emp.pattern === '5_DAYS' ? '5 Days' : '6 Days'}</td>
-            <td class="px-4 py-3 text-center font-mono text-slate-600">${planned.toFixed(1)} hrs</td>
-            <td class="px-4 py-3 text-center font-mono font-bold text-slate-800">${actualHours.toFixed(1)} hrs</td>
-            <td class="px-4 py-3 text-center font-mono font-bold ${eff >= 100 ? 'text-emerald-600' : 'text-amber-600'}">${eff}%</td>
-            <td class="px-4 py-3 text-center">
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${actualHours > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                ${actualHours > 0 ? 'Active' : 'Pending'}
-              </span>
+            <td class="px-4 py-3 font-mono text-xs text-slate-500">${emp.password}</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+                emp.role === 'MANAGER' ? 'bg-indigo-100 text-indigo-800' :
+                emp.role === 'SUPERVISOR' ? 'bg-emerald-100 text-emerald-800' :
+                emp.role === 'MONITORING' ? 'bg-amber-100 text-amber-800' :
+                'bg-slate-100 text-slate-700'
+              }">${emp.role}</span>
+            </td>
+            <td class="px-4 py-3 text-slate-600">${emp.dept || 'Operations'}</td>
+            <td class="px-4 py-3 text-right space-x-2">
+              <button onclick="window.openEditUserModal('${emp.empId}')" class="inline-flex items-center space-x-1 px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold transition text-xs">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <span>Edit</span>
+              </button>
+              <button onclick="window.promptDeleteUser('${emp.empId}')" class="inline-flex items-center space-x-1 px-2 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium transition text-xs">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                <span>Delete</span>
+              </button>
             </td>
           </tr>
-        `;
-      }).join('');
+        `).join('');
+      }
 
-      const govTbody = document.getElementById('user-governance-tbody');
-      govTbody.innerHTML = activeEmployees.map(emp => `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
-          <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
-          <td class="px-4 py-3 text-slate-600">${emp.role}</td>
-          <td class="px-4 py-3 text-slate-600">${emp.pattern === '5_DAYS' ? '5 Days' : '6 Days'}</td>
-          <td class="px-4 py-3 text-slate-600">${emp.dept}</td>
-          <td class="px-4 py-3 text-right space-x-2">
-            <button onclick="openEditUserModal('${emp.empId}')" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded font-medium transition">Edit</button>
-            <button onclick="promptDeleteUser('${emp.empId}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded font-medium transition">Delete</button>
-          </td>
-        </tr>
-      `).join('');
-
+      renderEfficiencyBarChart(chartLabels, chartEfficiencies);
+      renderCalendarDeclarationsTable();
       renderRecycleBin();
       lucide.createIcons();
     }
 
+    function renderEfficiencyBarChart(labels, values) {
+      const ctx = document.getElementById('teamEfficiencyChart');
+      if (!ctx) return;
+      if (efficiencyChartInstance) efficiencyChartInstance.destroy();
+
+      efficiencyChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: values.map(v => v >= 100 ? '#059669' : '#4f46e5'),
+            borderRadius: 4,
+            barThickness: 32
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#334155' } },
+            y: { beginAtZero: true, max: 140, grid: { color: '#f1f5f9' }, ticks: { callback: v => v + '%' } }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: c => ` Efficiency: ${c.parsed.y}%` } }
+          }
+        }
+      });
+    }
+
+    window.copyGraphToClipboard = async () => {
+      const chartCanvas = document.getElementById('teamEfficiencyChart');
+      if (!chartCanvas) {
+        showToast('Chart not available.', 'error');
+        return;
+      }
+
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = chartCanvas.width;
+      exportCanvas.height = chartCanvas.height;
+      const ctx = exportCanvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+      ctx.drawImage(chartCanvas, 0, 0);
+
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
+          const blob = await new Promise(resolve => exportCanvas.toBlob(resolve, 'image/png'));
+          if (blob) {
+            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            showToast('Graph copied to clipboard! Ready to paste.', 'success');
+            return;
+          }
+        } catch (err) {
+          console.warn('Clipboard write restricted. Displaying preview fallback.', err);
+        }
+      }
+
+      const dataUrl = exportCanvas.toDataURL('image/png');
+      openChartCopyModal(dataUrl);
+    };
+
+    function openChartCopyModal(imageDataUrl) {
+      let modal = document.getElementById('modal-chart-copy-preview');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-chart-copy-preview';
+        modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+        modal.innerHTML = `
+          <div class="bg-white rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl text-xs border border-slate-200">
+            <div class="flex items-center justify-between border-b pb-2">
+              <div class="flex items-center space-x-2 text-indigo-900 font-bold">
+                <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i>
+                <span class="text-sm">Copy Chart Image</span>
+              </div>
+              <button onclick="document.getElementById('modal-chart-copy-preview').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+            </div>
+            <p class="text-slate-500 text-[11px]">
+              Right-click the image below and select <strong>"Copy Image"</strong> to paste directly into Email or PowerPoint:
+            </p>
+            <div class="border rounded-xl p-2 bg-slate-50 flex justify-center overflow-hidden">
+              <img id="chart-preview-img" src="" alt="Chart Preview" class="max-h-60 rounded shadow-sm object-contain" />
+            </div>
+            <div class="flex justify-end space-x-2 pt-2">
+              <a id="chart-download-fallback-link" href="" download="Team_Efficiency_Chart.png" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow inline-flex items-center space-x-1.5">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Download PNG</span>
+              </a>
+              <button onclick="document.getElementById('modal-chart-copy-preview').classList.add('hidden')" class="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg">
+                Close
+              </button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        lucide.createIcons();
+      }
+
+      document.getElementById('chart-preview-img').src = imageDataUrl;
+      document.getElementById('chart-download-fallback-link').href = imageDataUrl;
+      modal.classList.remove('hidden');
+    }
+
+    window.openUserProfileModal = () => {
+      const user = state.currentUser;
+      if (!user) return;
+      document.getElementById('prof-modal-name').textContent = user.name || 'User';
+      document.getElementById('prof-modal-empid').textContent = user.empId;
+      document.getElementById('prof-modal-role').textContent = user.role;
+      document.getElementById('prof-modal-dept').textContent = user.dept || 'Operations';
+      document.getElementById('prof-modal-shift').textContent = SHIFTS[state.activeShift] ? SHIFTS[state.activeShift].label : 'General Shift';
+      document.getElementById('modal-user-profile').classList.remove('hidden');
+    };
+
+    function renderCalendarDeclarationsTable() {
+      const tbody = document.getElementById('holidays-tbody');
+      if (!tbody) return;
+
+      const filterSelect = document.getElementById('calendar-table-filter');
+      const filterVal = filterSelect ? filterSelect.value : 'ALL';
+
+      const filtered = state.calendarHolidays.filter(item => {
+        return filterVal === 'ALL' || String(item.week) === String(filterVal);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No calendar overrides found for this filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(item => {
+        let impactBadge = '';
+        if (item.type === 'holiday' || item.type === 'sunday') {
+          impactBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Excluded (0 hrs planned)</span>`;
+        } else {
+          impactBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Added to Planned Target</span>`;
+        }
+
+        return `
+          <tr class="border-b hover:bg-slate-50">
+            <td class="p-2.5 font-bold text-slate-800">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 mr-1.5">Week ${item.week}</span>
+              <span>${item.dayName || item.date}</span>
+            </td>
+            <td class="p-2.5 uppercase font-bold text-xs text-indigo-900">${item.type}</td>
+            <td class="p-2.5 font-medium text-slate-700">${item.label}</td>
+            <td class="p-2.5 text-center">${impactBadge}</td>
+            <td class="p-2.5 text-right space-x-1">
+              <button onclick="window.editCalendarHoliday('${item.id}')" class="text-indigo-600 hover:text-indigo-900 font-bold px-2 py-1 bg-indigo-50 rounded">Edit</button>
+              <button onclick="window.removeCalendarHoliday('${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.editCalendarHoliday = id => {
+      const item = state.calendarHolidays.find(x => String(x.id) === String(id));
+      if (!item) return;
+
+      document.getElementById('calendar-edit-id').value = item.id;
+      document.getElementById('holiday-input-week').value = item.week;
+      document.getElementById('holiday-input-date').value = item.date;
+      document.getElementById('holiday-input-type').value = item.type;
+      document.getElementById('holiday-input-label').value = item.label;
+
+      document.getElementById('calendar-form-heading').textContent = `Edit Override (${item.dayName || item.date}):`;
+      document.getElementById('btn-save-cal-entry').textContent = 'Update Declaration';
+      document.getElementById('btn-cancel-cal-edit').classList.remove('hidden');
+    };
+
+    window.cancelCalendarEdit = () => {
+      document.getElementById('calendar-edit-id').value = '';
+      document.getElementById('calendar-form-heading').textContent = 'Declare Date / Holiday Override:';
+      document.getElementById('btn-save-cal-entry').textContent = 'Save Calendar Entry';
+      document.getElementById('btn-cancel-cal-edit').classList.add('hidden');
+      document.getElementById('holiday-input-label').value = 'Holiday';
+    };
+
+    window.saveCustomHolidayEntry = () => {
+      const editId = document.getElementById('calendar-edit-id').value;
+      const weekVal = document.getElementById('holiday-input-week').value;
+      const dateStr = document.getElementById('holiday-input-date').value;
+      const typeStr = document.getElementById('holiday-input-type').value;
+      const labelStr = document.getElementById('holiday-input-label').value.trim();
+
+      if (!dateStr || !labelStr) {
+        showToast('Please specify a valid date and description.', 'error');
+        return;
+      }
+
+      const parts = dateStr.split('-');
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const dateObj = new Date(year, month, day);
+
+      let dayIndex = dateObj.getDay() - 1;
+      if (dayIndex < 0) dayIndex = 6;
+
+      const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const formattedDayName = `${dayNames[dayIndex]}, ${dateObj.getDate()} ${monthNames[dateObj.getMonth()]}`;
+
+      const payload = {
+        id: editId || 'cal_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        week: String(weekVal),
+        date: dateStr,
+        dayCol: dayIndex,
+        dayName: formattedDayName,
+        type: typeStr,
+        label: labelStr
+      };
+
+      if (editId) {
+        const idx = state.calendarHolidays.findIndex(x => String(x.id) === String(editId));
+        if (idx > -1) state.calendarHolidays[idx] = payload;
+        showToast(`Updated week ${weekVal} override: ${formattedDayName}.`, 'success');
+        cancelCalendarEdit();
+      } else {
+        const existingIdx = state.calendarHolidays.findIndex(x => String(x.week) === String(weekVal) && x.dayCol === dayIndex);
+        if (existingIdx > -1) {
+          state.calendarHolidays[existingIdx] = payload;
+          showToast(`Updated existing override for ${formattedDayName} in Week ${weekVal}.`, 'success');
+        } else {
+          state.calendarHolidays.push(payload);
+          showToast(`Added week ${weekVal} override: ${formattedDayName}.`, 'success');
+        }
+      }
+
+      const filterSelect = document.getElementById('calendar-table-filter');
+      if (filterSelect && filterSelect.value !== 'ALL' && filterSelect.value !== String(weekVal)) {
+        filterSelect.value = String(weekVal);
+      }
+
+      saveState();
+      renderCalendarDeclarationsTable();
+      renderGovernanceView();
+      renderTimesheetGrid();
+    };
+
+    window.removeCalendarHoliday = id => {
+      const idx = state.calendarHolidays.findIndex(x => String(x.id) === String(id));
+      if (idx > -1) {
+        const removed = state.calendarHolidays.splice(idx, 1)[0];
+        saveState();
+        renderCalendarDeclarationsTable();
+        renderGovernanceView();
+        renderTimesheetGrid();
+        showToast(`Deleted override for ${removed.dayName || removed.date} (Week ${removed.week}).`, 'info');
+      }
+    };
+
+    window.saveShiftConfigs = () => {
+      const s1 = parseFloat(document.getElementById('cfg-shift1-hrs').value) || 7.5;
+      const s2 = parseFloat(document.getElementById('cfg-shift2-hrs').value) || 7.5;
+      const s3 = parseFloat(document.getElementById('cfg-shift3-hrs').value) || 6.5;
+      const sG = parseFloat(document.getElementById('cfg-shiftG-hrs').value) || 7.5;
+
+      state.shiftConfigs = { '1ST': s1, '2ND': s2, '3RD': s3, 'GENERAL': sG };
+      saveState();
+      renderGovernanceView();
+      renderTimesheetGrid();
+      showToast(`Updated shift minimums: 1st=${s1}h, 2nd=${s2}h, 3rd=${s3}h, General=${sG}h`, 'success');
+    };
+
+    window.unlockAllDaysForEmployee = empId => {
+      if (!state.lockedDays[empId]) state.lockedDays[empId] = {};
+      state.lockedDays[empId][state.selectedWeek] = [];
+      saveState();
+      renderGovernanceView();
+      showToast(`Unlocked days for ${empId} in Week ${state.selectedWeek}.`, 'success');
+    };
+
+    window.openEditUserModal = empId => {
+      const emp = state.users.find(u => u.empId.toUpperCase() === empId.toUpperCase());
+      if (!emp) return;
+
+      document.getElementById('form-user-original-empid').value = emp.empId;
+      document.getElementById('input-user-empid').value = emp.empId;
+      document.getElementById('input-user-fullname').value = emp.name;
+      document.getElementById('input-user-password').value = emp.password;
+      document.getElementById('input-user-role').value = emp.role;
+      document.getElementById('input-user-dept').value = emp.dept || 'Operations';
+
+      document.getElementById('user-modal-title-text').textContent = `Edit Details: ${emp.name}`;
+      document.getElementById('btn-save-user-text').textContent = 'Save Changes';
+      document.getElementById('modal-user-form').classList.remove('hidden');
+    };
+
+    window.promptDeleteUser = empId => {
+      const target = state.users.find(u => u.empId === empId);
+      if (!target) return;
+      if (state.currentUser && state.currentUser.empId === empId) {
+        showToast('Cannot delete active logged-in session!', 'error');
+        return;
+      }
+      const reason = prompt(`Provide mandatory deletion reason for ${target.name}:`);
+      if (reason && reason.trim()) {
+        const idx = state.users.findIndex(u => u.empId === empId);
+        if (idx > -1) {
+          const removed = state.users.splice(idx, 1)[0];
+          removed.reason = reason.trim();
+          state.recycleBin.push(removed);
+          saveState();
+          renderGovernanceView();
+          showToast(`Archived ${empId} to Recycle Bin.`, 'info');
+        }
+      }
+    };
+
     function renderRecycleBin() {
       const tbody = document.getElementById('recycle-bin-tbody');
+      if (!tbody) return;
       if (state.recycleBin.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Recycle Bin is empty.</td></tr>`;
         return;
@@ -845,59 +1579,45 @@
         <tr class="border-b border-slate-100">
           <td class="px-3 py-2 font-mono font-bold">${item.empId}</td>
           <td class="px-3 py-2">${item.name}</td>
-          <td class="px-3 py-2 text-slate-500 italic">${item.reason}</td>
+          <td class="px-3 py-2 text-rose-700 italic">${item.reason}</td>
           <td class="px-3 py-2 text-right space-x-2">
-            <button onclick="restoreUser(${idx})" class="text-indigo-600 hover:underline">Restore</button>
-            <button onclick="purgeUserPermanently(${idx})" class="text-rose-600 hover:underline">Purge</button>
+            <button onclick="window.restoreUser(${idx})" class="text-indigo-600 hover:underline">Restore</button>
+            <button onclick="window.purgeUserPermanently(${idx})" class="text-rose-600 hover:underline">Purge</button>
           </td>
         </tr>
       `).join('');
     }
 
-    window.openEditUserModal = (empId) => {
-      const emp = state.users.find(u => u.empId === empId);
-      if (!emp) return;
-
-      document.getElementById('form-user-is-edit').value = 'true';
-      document.getElementById('form-user-original-empid').value = emp.empId;
-      document.getElementById('input-user-empid').value = emp.empId;
-      document.getElementById('input-user-fullname').value = emp.name;
-      document.getElementById('input-user-password').value = emp.password;
-      document.getElementById('input-user-role').value = emp.role;
-      document.getElementById('input-user-pattern').value = emp.pattern;
-      document.getElementById('input-user-dept').value = emp.dept;
-      document.getElementById('user-modal-title').textContent = `Edit Details: ${emp.name}`;
-
-      document.getElementById('modal-user-form').classList.remove('hidden');
-    };
-
-    window.promptDeleteUser = (empId) => {
-      state.deleteCandidateEmpId = empId;
-      document.getElementById('delete-target-empid').textContent = empId;
-      document.getElementById('delete-reason').value = '';
-      document.getElementById('modal-delete-user').classList.remove('hidden');
-    };
-
-    window.restoreUser = (idx) => {
+    window.restoreUser = idx => {
       const restored = state.recycleBin.splice(idx, 1)[0];
       delete restored.reason;
       state.users.push(restored);
       saveState();
       renderGovernanceView();
+      showToast(`Restored user: ${restored.empId}`, 'success');
     };
 
-    window.purgeUserPermanently = (idx) => {
-      if (confirm('Permanently purge this record? This action is irreversible.')) {
+    window.purgeUserPermanently = idx => {
+      if (confirm('Permanently purge this record?')) {
         state.recycleBin.splice(idx, 1);
         saveState();
         renderRecycleBin();
+        showToast('Record purged permanently.', 'info');
+      }
+    };
+
+    window.handleHomeClick = () => {
+      if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+        renderGovernanceView();
+      } else if (state.currentUser) {
+        renderTimesheetGrid();
       }
     };
 
     function setupEventListeners() {
       const userBtn = document.getElementById('user-menu-btn');
       const dropdown = document.getElementById('user-menu-dropdown');
-      userBtn.addEventListener('click', (e) => {
+      userBtn.addEventListener('click', e => {
         e.stopPropagation();
         dropdown.classList.toggle('hidden');
       });
@@ -906,195 +1626,77 @@
       document.getElementById('btn-logout').addEventListener('click', () => {
         localStorage.removeItem('ent_logged_empid');
         state.currentUser = null;
-        dropdown.classList.add('hidden');
         openLoginModal();
+        showToast('Logged out successfully.', 'info');
       });
 
-      document.getElementById('form-login').addEventListener('submit', (e) => {
+      // Admin Profile Edit Modal Handler (Admin Role Only)
+      document.getElementById('btn-edit-admin-profile').addEventListener('click', () => {
+        dropdown.classList.add('hidden');
+        if (!state.currentUser || state.currentUser.role !== 'ADMIN') {
+          showToast('Only Admin accounts can edit this profile.', 'error');
+          return;
+        }
+        document.getElementById('input-admin-name').value = state.currentUser.name || '';
+        document.getElementById('input-admin-pass').value = state.currentUser.password || '';
+        document.getElementById('input-admin-dept').value = state.currentUser.dept || '';
+        document.getElementById('modal-admin-self-edit').classList.remove('hidden');
+      });
+
+      document.getElementById('form-admin-self-edit').addEventListener('submit', e => {
         e.preventDefault();
-        const inputId = document.getElementById('login-empid').value.trim().toUpperCase();
-        const pass = document.getElementById('login-password').value.trim();
+        if (!state.currentUser || state.currentUser.role !== 'ADMIN') return;
+        
+        const newName = document.getElementById('input-admin-name').value.trim();
+        const newPass = document.getElementById('input-admin-pass').value.trim();
+        const newDept = document.getElementById('input-admin-dept').value.trim();
 
-        const matched = state.users.find(u => {
-          const id = u.empId.toUpperCase();
-          const matchesId = id === inputId || id === `EMP-${inputId}` || id.replace('EMP-', '') === inputId;
-          return matchesId && u.password === pass;
-        });
+        const adminIdx = state.users.findIndex(u => u.empId.toUpperCase() === state.currentUser.empId.toUpperCase());
+        if (adminIdx > -1) {
+          state.users[adminIdx].name = newName;
+          state.users[adminIdx].password = newPass;
+          state.users[adminIdx].dept = newDept;
 
-        if (matched) {
-          document.getElementById('login-error-msg').classList.add('hidden');
-          document.getElementById('form-login').reset();
-          authenticateUser(matched);
-        } else {
-          document.getElementById('login-error-msg').classList.remove('hidden');
+          state.currentUser.name = newName;
+          state.currentUser.password = newPass;
+          state.currentUser.dept = newDept;
         }
-      });
 
-      document.getElementById('btn-reset-cache').addEventListener('click', () => {
-        if (confirm('Reset database to clean defaults? This will restore ADMIN and standard test users.')) {
-          localStorage.clear();
-          location.reload();
-        }
-      });
-
-      document.getElementById('select-shift').addEventListener('change', (e) => {
-        state.activeShift = e.target.value;
-        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
-          renderGovernanceView();
-        } else {
-          renderTimesheetGrid();
-        }
-      });
-
-      document.getElementById('select-week').addEventListener('change', (e) => {
-        state.selectedWeek = e.target.value;
-        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
-          renderGovernanceView();
-        } else {
-          renderTimesheetGrid();
-        }
-      });
-
-      document.getElementById('btn-add-project').addEventListener('click', () => {
-        document.getElementById('modal-add-project').classList.remove('hidden');
-      });
-
-      document.getElementById('form-add-project').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const code = document.getElementById('input-new-project-code').value.trim().toUpperCase();
-        if (code && state.currentUser) {
-          state.userProjects[state.currentUser.empId].push({ code: code, hours: [0, 0, 0, 0, 0, 0, 0] });
-          saveState();
-          document.getElementById('modal-add-project').classList.add('hidden');
-          document.getElementById('form-add-project').reset();
-          renderTimesheetGrid();
-        }
-      });
-
-      document.getElementById('btn-save-draft').addEventListener('click', () => {
         saveState();
-        alert('Work log saved as draft.');
+        document.getElementById('modal-admin-self-edit').classList.add('hidden');
+        document.getElementById('nav-user-name').textContent = newName;
+        showToast('Admin credentials updated successfully.', 'success');
       });
 
-      document.getElementById('btn-submit-timesheet').addEventListener('click', () => {
-        saveState();
-        alert('Timesheet submitted successfully.');
+      document.getElementById('btn-open-calendar-settings').addEventListener('click', () => {
+        document.getElementById('cfg-shift1-hrs').value = state.shiftConfigs['1ST'] || 7.5;
+        document.getElementById('cfg-shift2-hrs').value = state.shiftConfigs['2ND'] || 7.5;
+        document.getElementById('cfg-shift3-hrs').value = state.shiftConfigs['3RD'] || 6.5;
+        document.getElementById('cfg-shiftG-hrs').value = state.shiftConfigs['GENERAL'] || 7.5;
+        document.getElementById('calendar-table-filter').value = state.selectedWeek;
+        document.getElementById('holiday-input-week').value = state.selectedWeek;
+
+        const weekMeta = getWeekDates(state.selectedWeek);
+        document.getElementById('holiday-input-date').value = weekMeta.mondayDate;
+
+        cancelCalendarEdit();
+        renderCalendarDeclarationsTable();
+        document.getElementById('modal-calendar-settings').classList.remove('hidden');
       });
+
+      document.getElementById('btn-copy-chart').addEventListener('click', window.copyGraphToClipboard);
 
       document.getElementById('btn-open-export-modal').addEventListener('click', () => {
         document.getElementById('modal-export').classList.remove('hidden');
       });
 
-      document.getElementById('export-scope-type').addEventListener('change', (e) => {
-        if (e.target.value === 'WEEK') {
-          document.getElementById('export-week-selector-container').classList.remove('hidden');
-          document.getElementById('export-month-selector-container').classList.add('hidden');
-        } else {
-          document.getElementById('export-week-selector-container').classList.add('hidden');
-          document.getElementById('export-month-selector-container').classList.remove('hidden');
-        }
-      });
-
-      document.getElementById('btn-confirm-export').addEventListener('click', () => {
-        executeCsvExport();
-      });
-
+      // ADD EMPLOYEE MODAL TRIGGER
       document.getElementById('btn-create-user-modal').addEventListener('click', () => {
-        document.getElementById('form-user-is-edit').value = 'false';
         document.getElementById('form-user-original-empid').value = '';
         document.getElementById('form-user-governance').reset();
-        document.getElementById('user-modal-title').textContent = 'Create Employee Account';
+        document.getElementById('user-modal-title-text').textContent = 'Add New Employee';
+        document.getElementById('btn-save-user-text').textContent = 'Create Account';
         document.getElementById('modal-user-form').classList.remove('hidden');
-      });
-
-      document.getElementById('form-user-governance').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const isEdit = document.getElementById('form-user-is-edit').value === 'true';
-        const originalEmpId = document.getElementById('form-user-original-empid').value;
-        const empId = document.getElementById('input-user-empid').value.trim().toUpperCase();
-        const name = document.getElementById('input-user-fullname').value.trim();
-        const password = document.getElementById('input-user-password').value.trim();
-        const role = document.getElementById('input-user-role').value;
-        const pattern = document.getElementById('input-user-pattern').value;
-        const dept = document.getElementById('input-user-dept').value.trim();
-
-        if (isEdit) {
-          const idx = state.users.findIndex(x => x.empId === originalEmpId);
-          if (idx !== -1) {
-            // Check if new Emp ID already exists elsewhere
-            if (originalEmpId !== empId && state.users.some(x => x.empId === empId)) {
-              alert('Employee ID already exists.');
-              return;
-            }
-            state.users[idx] = { ...state.users[idx], empId, name, password, role, pattern, dept };
-            if (originalEmpId !== empId) {
-              if (state.userProjects[originalEmpId]) {
-                state.userProjects[empId] = state.userProjects[originalEmpId];
-                delete state.userProjects[originalEmpId];
-              }
-            }
-            if (state.currentUser.empId === originalEmpId) {
-              state.currentUser = state.users[idx];
-              document.getElementById('nav-user-name').textContent = name;
-            }
-          }
-        } else {
-          if (state.users.some(x => x.empId === empId)) {
-            alert('Employee ID already exists.');
-            return;
-          }
-          state.users.push({ empId, name, password, role, pattern, dept });
-          state.userProjects[empId] = [{ code: 'PROJECT-01', hours: [0,0,0,0,0,0,0] }];
-        }
-
-        saveState();
-        document.getElementById('modal-user-form').classList.add('hidden');
-        renderGovernanceView();
-      });
-
-      document.getElementById('btn-edit-admin-profile').addEventListener('click', () => {
-        const admin = state.users.find(u => u.role === 'ADMIN');
-        if (admin) {
-          document.getElementById('admin-prof-empid').value = admin.empId;
-          document.getElementById('admin-prof-name').value = admin.name;
-          document.getElementById('admin-prof-password').value = admin.password;
-          document.getElementById('admin-prof-dept').value = admin.dept;
-          document.getElementById('modal-admin-profile').classList.remove('hidden');
-        }
-      });
-
-      document.getElementById('form-admin-profile').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const admin = state.users.find(u => u.role === 'ADMIN');
-        if (admin) {
-          admin.empId = document.getElementById('admin-prof-empid').value.trim().toUpperCase();
-          admin.name = document.getElementById('admin-prof-name').value.trim();
-          admin.password = document.getElementById('admin-prof-password').value.trim();
-          admin.dept = document.getElementById('admin-prof-dept').value.trim();
-          saveState();
-          document.getElementById('nav-user-name').textContent = admin.name;
-          document.getElementById('dropdown-user-id').textContent = `${admin.empId} (ADMIN)`;
-          document.getElementById('modal-admin-profile').classList.add('hidden');
-          alert('Admin profile updated successfully.');
-        }
-      });
-
-      document.getElementById('btn-confirm-delete-user').addEventListener('click', () => {
-        const reason = document.getElementById('delete-reason').value.trim();
-        if (!reason) {
-          alert('Please provide a deletion reason.');
-          return;
-        }
-
-        const idx = state.users.findIndex(u => u.empId === state.deleteCandidateEmpId);
-        if (idx !== -1) {
-          const removed = state.users.splice(idx, 1)[0];
-          removed.reason = reason;
-          state.recycleBin.push(removed);
-          saveState();
-          document.getElementById('modal-delete-user').classList.add('hidden');
-          renderGovernanceView();
-        }
       });
 
       document.getElementById('btn-open-recycle-bin').addEventListener('click', () => {
@@ -1102,40 +1704,147 @@
         document.getElementById('modal-recycle-bin').classList.remove('hidden');
       });
 
+      document.getElementById('btn-add-project').addEventListener('click', () => {
+        document.getElementById('input-new-project-code').value = '';
+        document.getElementById('modal-add-project').classList.remove('hidden');
+      });
+
+      document.getElementById('form-add-project').addEventListener('submit', e => {
+        e.preventDefault();
+        const code = document.getElementById('input-new-project-code').value.trim().toUpperCase();
+        if (code && state.currentUser) {
+          const rows = getUserWeekProjects(state.currentUser.empId, state.selectedWeek);
+          rows.push({ code, hours: [0, 0, 0, 0, 0, 0, 0] });
+          saveState();
+          document.getElementById('modal-add-project').classList.add('hidden');
+          renderTimesheetGrid();
+          showToast(`Project ${code} added for Week ${state.selectedWeek}.`, 'success');
+        }
+      });
+
+      document.getElementById('btn-save-draft').addEventListener('click', () => {
+        saveState();
+        showToast('Timesheet draft saved.', 'info');
+      });
+
+      document.getElementById('btn-submit-timesheet').addEventListener('click', () => {
+        try {
+          if (!state.currentUser) {
+            showToast('User session expired. Please sign in.', 'error');
+            return;
+          }
+
+          const user = state.currentUser;
+          const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+          if (!rows || !Array.isArray(rows) || rows.length === 0) {
+            showToast('No project rows to submit.', 'error');
+            return;
+          }
+
+          const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+          rows.forEach(r => {
+            if (r.hours && Array.isArray(r.hours)) {
+              r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0);
+            }
+          });
+
+          const newlyLocked = [];
+          dayTotals.forEach((tot, idx) => {
+            if (tot > 0) newlyLocked.push(idx);
+          });
+
+          if (newlyLocked.length === 0) {
+            showToast('Please log hours on at least one working day before submitting.', 'error');
+            return;
+          }
+
+          if (confirm(`Submit work log for Week ${state.selectedWeek}? Updated days will be locked.`)) {
+            if (!state.lockedDays) state.lockedDays = {};
+            if (typeof state.lockedDays[user.empId] !== 'object' || Array.isArray(state.lockedDays[user.empId])) {
+              state.lockedDays[user.empId] = {};
+            }
+
+            const currentWeekLocked = state.lockedDays[user.empId][state.selectedWeek] || [];
+            state.lockedDays[user.empId][state.selectedWeek] = Array.from(new Set([...currentWeekLocked, ...newlyLocked]));
+
+            saveState();
+            renderTimesheetGrid();
+            showToast(`Work log for Week ${state.selectedWeek} submitted and locked successfully.`, 'success');
+          }
+        } catch (err) {
+          console.error("Submission error:", err);
+          showToast("Failed to lock timesheet. Please try again.", "error");
+        }
+      });
+
+      // USER FORM SUBMISSION
+      document.getElementById('form-user-governance').addEventListener('submit', e => {
+        e.preventDefault();
+        const originalEmpId = document.getElementById('form-user-original-empid').value.trim().toUpperCase();
+        const newEmpId = document.getElementById('input-user-empid').value.trim().toUpperCase();
+        const name = document.getElementById('input-user-fullname').value.trim();
+        const password = document.getElementById('input-user-password').value.trim();
+        const role = document.getElementById('input-user-role').value;
+        const dept = document.getElementById('input-user-dept').value.trim();
+
+        if (originalEmpId) {
+          const idx = state.users.findIndex(u => u.empId.toUpperCase() === originalEmpId);
+          if (idx > -1) {
+            state.users[idx] = { empId: newEmpId, name, password, role, dept };
+            if (originalEmpId !== newEmpId && state.userProjects[originalEmpId]) {
+              state.userProjects[newEmpId] = state.userProjects[originalEmpId];
+              delete state.userProjects[originalEmpId];
+            }
+          }
+          showToast(`Account ${newEmpId} updated successfully.`, 'success');
+        } else {
+          if (state.users.some(u => u.empId.toUpperCase() === newEmpId)) {
+            showToast('An account with this Employee ID already exists!', 'error');
+            return;
+          }
+          state.users.push({ empId: newEmpId, name, password, role, dept });
+          showToast(`User ${newEmpId} created successfully.`, 'success');
+        }
+
+        saveState();
+        document.getElementById('modal-user-form').classList.add('hidden');
+        renderGovernanceView();
+      });
+
+      document.getElementById('form-login').addEventListener('submit', e => {
+        e.preventDefault();
+        const empid = document.getElementById('login-empid').value.trim().toUpperCase();
+        const pass = document.getElementById('login-password').value.trim();
+
+        const found = state.users.find(u => u.empId.toUpperCase() === empid && u.password === pass);
+        if (found) {
+          authenticateUser(found);
+          showToast(`Welcome back, ${found.name}!`, 'success');
+        } else {
+          showToast('Invalid Employee ID or password.', 'error');
+        }
+      });
+
+      document.getElementById('select-shift').addEventListener('change', e => {
+        state.activeShift = e.target.value;
+        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) renderGovernanceView();
+        else renderTimesheetGrid();
+      });
+
+      document.getElementById('select-week').addEventListener('change', e => {
+        state.selectedWeek = e.target.value;
+        showToast(`Switched to Week ${state.selectedWeek}`, 'info');
+        
+        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+          renderGovernanceView();
+        } else {
+          renderTimesheetGrid();
+        }
+      });
+
       document.querySelectorAll('.btn-close-modal').forEach(btn => {
         btn.addEventListener('click', () => btn.closest('.fixed').classList.add('hidden'));
       });
-    }
-
-    function executeCsvExport() {
-      const scope = document.getElementById('export-scope-type').value;
-      const weekVal = document.getElementById('export-week-val').value;
-      const monthVal = document.getElementById('export-month-val').value;
-      const fileName = scope === 'WEEK' ? `Workforce_Efficiency_${weekVal}.csv` : `Workforce_Efficiency_${monthVal}.csv`;
-      const targetHours = SHIFTS[state.activeShift].targetWeekday;
-
-      let csv = '\uFEFF';
-      csv += 'Emp ID,Full Name,Role,Department,Work Pattern,Planned Target (Hrs),Actual Logged (Hrs),Efficiency (%)\n';
-
-      state.users.filter(u => !u.isProtected && u.role !== 'ADMIN').forEach(emp => {
-        const rows = state.userProjects[emp.empId] || [];
-        let actual = 0;
-        rows.forEach(r => r.hours.forEach(h => actual += parseFloat(h) || 0));
-        const planned = emp.pattern === '5_DAYS' ? (targetHours * 5) : (targetHours * 6);
-        const eff = planned > 0 ? ((actual / planned) * 100).toFixed(1) : 0;
-        csv += `"${emp.empId}","${emp.name}","${emp.role}","${emp.dept}","${emp.pattern}",${planned.toFixed(1)},${actual.toFixed(1)},${eff}%\n`;
-      });
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      document.getElementById('modal-export').classList.add('hidden');
     }
   </script>
 </body>
