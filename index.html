@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Workforce Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .col-updated { background-color: #dcfce7 !important; border-color: #86efac !important; }
+    .col-not-updated { background-color: #fee2e2 !important; border-color: #fca5a5 !important; }
+    .col-upcoming { background-color: #fef9c3 !important; border-color: #fde047 !important; }
+    .col-holiday { background-color: #ffedd5 !important; border-color: #fdba74 !important; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-9 w-9 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20">
+          <i data-lucide="layers" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight text-white block leading-none">NEXUS WORKFORCE</span>
+          <span class="text-[10px] font-medium tracking-wider uppercase text-slate-400">Enterprise Governance</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <div id="role-badge-container" class="hidden sm:flex items-center"></div>
+
+        <div class="relative">
+          <button id="user-menu-btn" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+            <i data-lucide="user-circle-2" class="w-5 h-5 text-indigo-400"></i>
+            <span id="nav-user-name" class="text-xs font-semibold uppercase">Loading...</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+          </button>
+
+          <div id="user-menu-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1 text-slate-800 z-50">
+            <div class="px-4 py-2 border-b border-slate-100">
+              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Signed in as</p>
+              <p id="dropdown-user-id" class="text-sm font-bold text-slate-900 font-mono"></p>
+            </div>
+            <button id="btn-edit-admin-profile" class="hidden w-full text-left px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center space-x-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
+              <span>Edit Admin Profile</span>
+            </button>
+            <button id="btn-logout" class="w-full text-left px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 flex items-center space-x-2 border-t border-slate-100">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+              <span>Log Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
+
+    <!-- CONTROLS & TIMELINE RIBBON -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Assigned Shift</label>
+            <select id="select-shift" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="GENERAL">General Shift (7.5 hrs)</option>
+              <option value="1ST">1st Shift (7.5 hrs)</option>
+              <option value="2ND">2nd Shift (7.5 hrs)</option>
+              <option value="3RD">3rd Shift (6.5 hrs)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Select Week</label>
+            <select id="select-week" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="21">Week 21 (May)</option>
+              <option value="22">Week 22 (May)</option>
+              <option value="23">Week 23 (Jun)</option>
+              <option value="24">Week 24 (Jun)</option>
+              <option value="25" selected>Week 25 (Sep)</option>
+              <option value="26">Week 26 (Sep)</option>
+              <option value="27">Week 27 (Oct)</option>
+              <option value="28">Week 28 (Oct)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Current Month</label>
+            <div id="display-month" class="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
+              September-2026
+            </div>
+          </div>
+        </div>
+
+        <div id="efficiency-metric-card" class="flex items-center space-x-4 bg-slate-50 p-3 rounded-lg border border-slate-200">
+          <div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Planned</div>
+            <div id="kpi-planned" class="text-sm font-bold text-slate-800 font-mono">37.5 hrs</div>
+          </div>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Actual Logged</div>
+            <div id="kpi-actual" class="text-sm font-bold text-slate-800 font-mono">0.0 hrs</div>
+          </div>
+          <div class="h-8 w-px bg-slate-200"></div>
+          <div>
+            <div class="text-[10px] uppercase font-bold text-slate-500">Efficiency</div>
+            <div id="kpi-efficiency" class="text-sm font-bold text-emerald-600 font-mono">0.0%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MANAGER & ADMIN GOVERNANCE SUITE -->
+    <section id="governance-container" class="hidden space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div>
+          <h2 class="text-base font-bold text-slate-800">Executive Governance & Workforce Matrix</h2>
+          <p class="text-xs text-slate-500">Monitor live team efficiency and edit employee details or Emp IDs instantly.</p>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+          <button id="btn-open-export-modal" class="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+            <span>Export Data</span>
+          </button>
+          <button id="btn-create-user-modal" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>Add Employee</span>
+          </button>
+          <button id="btn-open-recycle-bin" class="hidden text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1.5 transition">
+            <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
+            <span>Recycle Bin</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Efficiency Matrix -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-800">Team Work Efficiency Matrix (Week 25)</h3>
+          <span class="text-xs font-medium text-slate-500">Live Status Overview</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase font-semibold">
+              <tr>
+                <th class="px-4 py-3">Emp ID</th>
+                <th class="px-4 py-3">Full Name</th>
+                <th class="px-4 py-3">Role</th>
+                <th class="px-4 py-3">Work Pattern</th>
+                <th class="px-4 py-3 text-center">Planned (Target)</th>
+                <th class="px-4 py-3 text-center">Actual Logged</th>
+                <th class="px-4 py-3 text-center">Efficiency (%)</th>
+                <th class="px-4 py-3 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="efficiency-matrix-tbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- User Governance Table -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h3 class="text-sm font-bold text-slate-800">User Governance & Credentials</h3>
+          <span class="text-xs text-slate-400">Managers & Admins can edit any ID or attribute</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-700">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase font-semibold">
+              <tr>
+                <th class="px-4 py-3">Emp ID</th>
+                <th class="px-4 py-3">Full Name</th>
+                <th class="px-4 py-3">Role</th>
+                <th class="px-4 py-3">Work Pattern</th>
+                <th class="px-4 py-3">Department</th>
+                <th class="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="user-governance-tbody" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- STANDARD TIMESHEET SECTION -->
+    <section id="timesheet-section" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <button id="btn-add-project" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add Project</span>
+        </button>
+
+        <div class="flex flex-wrap items-center gap-3 text-[11px] font-medium text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+          <span class="flex items-center space-x-1.5">
+            <span class="w-3 h-3 rounded bg-emerald-200 border border-emerald-400"></span>
+            <span>Updated Day</span>
+          </span>
+          <span class="flex items-center space-x-1.5">
+            <span class="w-3 h-3 rounded bg-rose-200 border border-rose-400"></span>
+            <span>Not Updated</span>
+          </span>
+          <span class="flex items-center space-x-1.5">
+            <span class="w-3 h-3 rounded bg-amber-200 border border-amber-400"></span>
+            <span>Upcoming</span>
+          </span>
+          <span class="flex items-center space-x-1.5">
+            <span class="w-3 h-3 rounded bg-orange-200 border border-orange-400"></span>
+            <span>Holiday / Flex</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-900 text-white font-semibold">
+                <th class="py-3 px-3 w-12 text-center border-r border-slate-800">S.No</th>
+                <th class="py-3 px-3 w-36 border-r border-slate-800">Project Code</th>
+                <th class="py-3 px-3 w-28 border-r border-slate-800">Month</th>
+                <th class="py-3 px-2 text-center border-r border-slate-800">Mon, 14 Sep</th>
+                <th class="py-3 px-2 text-center border-r border-slate-800">Tue, 15 Sep</th>
+                <th class="py-3 px-2 text-center border-r border-slate-800">Wed, 16 Sep</th>
+                <th class="py-3 px-2 text-center border-r border-slate-800">Thu, 17 Sep</th>
+                <th class="py-3 px-2 text-center border-r border-slate-800">Fri, 18 Sep</th>
+                <th class="py-3 px-2 text-center border-r border-slate-800">Sat, 19 Sep</th>
+                <th class="py-3 px-2 text-center border-r border-slate-800">Sun, 20 Sep</th>
+                <th class="py-3 px-3 w-16 text-center border-r border-slate-800">Total</th>
+                <th class="py-3 px-3 w-20 text-center">Action</th>
+              </tr>
+              <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                <td colspan="3" class="py-2.5 px-3 text-right text-indigo-900 uppercase tracking-wider text-[11px] border-r border-slate-200">
+                  Minimum Hours Balance:
+                </td>
+                <td id="target-cell-0" class="py-2 px-1 text-center font-mono border-r border-slate-200 text-slate-500">Holiday</td>
+                <td id="target-cell-1" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
+                <td id="target-cell-2" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
+                <td id="target-cell-3" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
+                <td id="target-cell-4" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
+                <td id="target-cell-5" class="py-2 px-1 text-center font-mono border-r border-slate-200">7.5</td>
+                <td id="target-cell-6" class="py-2 px-1 text-center font-mono border-r border-slate-200 text-slate-500">0.0</td>
+                <td colspan="2" class="border-r border-slate-200"></td>
+              </tr>
+            </thead>
+            <tbody id="timesheet-tbody" class="divide-y divide-slate-200"></tbody>
+            <tfoot>
+              <tr class="bg-slate-100 text-slate-900 font-bold border-t-2 border-slate-300">
+                <td colspan="3" class="py-3 px-3 text-right uppercase tracking-wider text-[11px] border-r border-slate-200">
+                  Daily Total:
+                </td>
+                <td id="tot-day-0" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
+                <td id="tot-day-1" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
+                <td id="tot-day-2" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
+                <td id="tot-day-3" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
+                <td id="tot-day-4" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
+                <td id="tot-day-5" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
+                <td id="tot-day-6" class="py-2.5 px-1 text-center font-mono border-r border-slate-200">0.0</td>
+                <td id="tot-grand-total" class="py-2.5 px-2 text-center font-mono text-indigo-700 border-r border-slate-200">0.0</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-2">
+        <button id="btn-save-draft" class="text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-4 py-2 rounded-lg shadow-sm transition">
+          Save as Draft
+        </button>
+        <button id="btn-submit-timesheet" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg shadow-sm transition">
+          Submit Work Log
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- LOGIN DIALOG -->
+  <div id="modal-login" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
+      <div class="bg-slate-900 p-6 text-white text-center">
+        <div class="h-10 w-10 bg-indigo-600 rounded-xl mx-auto flex items-center justify-center font-bold text-white mb-2 shadow-lg shadow-indigo-500/30">
+          <i data-lucide="lock" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-lg font-bold">Enterprise Authentication</h3>
+        <p class="text-xs text-slate-400">Sign in with your Employee ID / Username</p>
+      </div>
+
+      <form id="form-login" class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Employee ID</label>
+          <input type="text" id="login-empid" required placeholder="e.g. ADMIN, EMP-1001, EMP-8021" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div id="login-error-msg" class="hidden text-xs text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg">
+          Invalid Emp ID or password.
+        </div>
+
+        <button type="submit" class="w-full text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg shadow transition">
+          Sign In to Portal
+        </button>
+
+        <div class="pt-2 text-center">
+          <button type="button" id="btn-reset-cache" class="text-[11px] text-slate-400 hover:text-indigo-600 underline">
+            Reset Database to Defaults
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CREATE / EDIT USER MODAL (Allows Emp ID editing) -->
+  <div id="modal-user-form" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-md p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 id="user-modal-title" class="text-sm font-bold text-slate-800">Edit Employee Account</h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="form-user-governance" class="space-y-3">
+        <input type="hidden" id="form-user-is-edit" value="false">
+        <input type="hidden" id="form-user-original-empid" value="">
+        
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Employee ID (Emp ID - Editable)</label>
+          <input type="text" id="input-user-empid" required placeholder="e.g. EMP-9055" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
+          <input type="text" id="input-user-fullname" required placeholder="Full Name" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+          <input type="text" id="input-user-password" required placeholder="Password" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Role</label>
+            <select id="input-user-role" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="MONITORING">Monitoring</option>
+              <option value="MANAGER">Manager</option>
+              <option value="USER">User</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Work Pattern</label>
+            <select id="input-user-pattern" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
+              <option value="5_DAYS">5 Days (Mon - Fri)</option>
+              <option value="6_DAYS">6 Days (Mon - Sat)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Department</label>
+          <input type="text" id="input-user-dept" required placeholder="Department" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="pt-2 flex items-center justify-end space-x-2">
+          <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN SELF PROFILE MODAL -->
+  <div id="modal-admin-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+          <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
+          <span>Edit Admin Profile</span>
+        </h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="form-admin-profile" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Admin Emp ID</label>
+          <input type="text" id="admin-prof-empid" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
+          <input type="text" id="admin-prof-name" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+          <input type="text" id="admin-prof-password" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Department</label>
+          <input type="text" id="admin-prof-dept" required class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div class="pt-2 flex items-center justify-end space-x-2">
+          <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">
+            Update Admin Profile
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EXPORT CONFIGURATION MODAL -->
+  <div id="modal-export" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+          <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
+          <span>Export Workforce Data</span>
+        </h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Export Range Scope</label>
+          <select id="export-scope-type" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
+            <option value="WEEK">Export by Specific Week</option>
+            <option value="MONTH">Export by Specific Month</option>
+          </select>
+        </div>
+        <div id="export-week-selector-container">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Select Week</label>
+          <select id="export-week-val" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
+            <option value="Week_25">Week 25 (Current)</option>
+            <option value="Week_24">Week 24</option>
+            <option value="Week_23">Week 23</option>
+          </select>
+        </div>
+        <div id="export-month-selector-container" class="hidden">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Select Month</label>
+          <select id="export-month-val" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-800">
+            <option value="September_2026">September 2026</option>
+            <option value="August_2026">August 2026</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-2 flex items-center justify-end space-x-2">
+        <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button id="btn-confirm-export" class="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow transition flex items-center space-x-1.5">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>Download CSV</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD PROJECT MODAL -->
+  <div id="modal-add-project" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-sm font-bold text-slate-800">Add Project</h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form id="form-add-project" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Project Code</label>
+          <input type="text" id="input-new-project-code" required placeholder="e.g. N603-V2" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono uppercase text-slate-800 focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div class="pt-2 flex items-center justify-end space-x-2">
+          <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">Add Row</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DELETE REASON MODAL -->
+  <div id="modal-delete-user" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4">
+      <div class="flex items-center space-x-2 text-rose-600">
+        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        <h4 class="text-sm font-bold">Confirm Account Removal</h4>
+      </div>
+      <p class="text-xs text-slate-600">
+        Moving account <strong id="delete-target-empid" class="font-mono text-slate-800"></strong> to Recycle Bin.
+      </p>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Mandatory Deletion Reason</label>
+        <textarea id="delete-reason" required rows="2" placeholder="e.g. Contract ended" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-rose-500"></textarea>
+      </div>
+      <div class="flex items-center justify-end space-x-2 pt-2">
+        <button type="button" class="btn-close-modal text-xs font-semibold px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+        <button id="btn-confirm-delete-user" class="text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg shadow transition">Move to Bin</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECYCLE BIN MODAL -->
+  <div id="modal-recycle-bin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
+          <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
+          <span>Admin Recycle Bin & Audit Logs</span>
+        </h4>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="max-h-64 overflow-y-auto">
+        <table class="w-full text-left text-xs text-slate-700">
+          <thead class="bg-slate-50 text-slate-600 uppercase font-semibold">
+            <tr>
+              <th class="px-3 py-2">Emp ID</th>
+              <th class="px-3 py-2">Name</th>
+              <th class="px-3 py-2">Deletion Reason</th>
+              <th class="px-3 py-2 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="recycle-bin-tbody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="mt-auto bg-white border-t border-slate-200 py-3 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <div>
+        <span>&copy; 2026 Surya M R. All rights reserved.</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="inline-flex items-center space-x-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span class="text-[11px]">System Online</span>
+        </span>
+        <span class="text-[11px] font-mono text-slate-400">v4.9.1-ent</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const DEFAULT_USERS = [
+      { empId: 'ADMIN', name: 'System Root Admin', role: 'ADMIN', password: 'admin123', dept: 'Executive Governance', pattern: '6_DAYS', isProtected: true },
+      { empId: 'EMP-1001', name: 'D Sandeepkumar', role: 'MANAGER', password: 'mgr123', dept: 'Operations & Engineering', pattern: '6_DAYS' },
+      { empId: 'EMP-8021', name: 'Surya Ramachandran', role: 'SUPERVISOR', password: 'super123', dept: 'Battery Systems Testing', pattern: '5_DAYS' },
+      { empId: 'EMP-8045', name: 'Priya Sharma', role: 'MONITORING', password: 'mon123', dept: 'Quality & Field Dynamics', pattern: '6_DAYS' },
+      { empId: 'EMP-9102', name: 'Rajesh Kumar', role: 'USER', password: 'user123', dept: 'Plant Line Assembly', pattern: '5_DAYS' }
+    ];
+
+    const DEFAULT_PROJECTS = {
+      'EMP-8021': [
+        { code: 'N603-V2', hours: [0, 7.5, 7.5, 7.5, 7.5, 0, 0] },
+        { code: 'U769M', hours: [0, 0, 0, 0, 0, 0, 0] }
+      ],
+      'EMP-8045': [
+        { code: 'EV-BAT-CELL', hours: [0, 7.5, 7.5, 7.5, 7.5, 7.5, 0] }
+      ],
+      'EMP-9102': [
+        { code: 'PLANT-MAINT', hours: [0, 7.5, 7.5, 0, 0, 0, 0] }
+      ]
+    };
+
+    let state = {
+      currentUser: null,
+      users: JSON.parse(localStorage.getItem('ent_users_v2')) || DEFAULT_USERS,
+      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v2')) || [],
+      userProjects: JSON.parse(localStorage.getItem('ent_projects_v2')) || DEFAULT_PROJECTS,
+      activeShift: 'GENERAL',
+      selectedWeek: '25',
+      currentMonth: 'September-2026',
+      deleteCandidateEmpId: null
+    };
+
+    const legacyAdminIndex = state.users.findIndex(u => u.empId === 'EMP-ADMIN-TOP');
+    if (legacyAdminIndex !== -1) {
+      state.users[legacyAdminIndex].empId = 'ADMIN';
+      saveState();
+    }
+
+    function saveState() {
+      localStorage.setItem('ent_users_v2', JSON.stringify(state.users));
+      localStorage.setItem('ent_recycle_v2', JSON.stringify(state.recycleBin));
+      localStorage.setItem('ent_projects_v2', JSON.stringify(state.userProjects));
+    }
+
+    const SHIFTS = {
+      'GENERAL': { label: 'General Shift', targetWeekday: 7.5 },
+      '1ST': { label: '1st Shift', targetWeekday: 7.5 },
+      '2ND': { label: '2nd Shift', targetWeekday: 7.5 },
+      '3RD': { label: '3rd Shift', targetWeekday: 6.5 }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      setupEventListeners();
+      checkAuth();
+    });
+
+    function checkAuth() {
+      const savedEmpId = localStorage.getItem('ent_logged_empid');
+      if (savedEmpId) {
+        const found = state.users.find(u => u.empId === savedEmpId);
+        if (found) {
+          authenticateUser(found);
+          return;
+        }
+      }
+      openLoginModal();
+    }
+
+    function openLoginModal() {
+      document.getElementById('modal-login').classList.remove('hidden');
+    }
+
+    function authenticateUser(user) {
+      state.currentUser = user;
+      localStorage.setItem('ent_logged_empid', user.empId);
+      document.getElementById('modal-login').classList.add('hidden');
+      
+      document.getElementById('nav-user-name').textContent = user.name;
+      document.getElementById('dropdown-user-id').textContent = `${user.empId} (${user.role})`;
+
+      const adminBtn = document.getElementById('btn-edit-admin-profile');
+      if (user.role === 'ADMIN') {
+        adminBtn.classList.remove('hidden');
+      } else {
+        adminBtn.classList.add('hidden');
+      }
+
+      const badgeContainer = document.getElementById('role-badge-container');
+      badgeContainer.innerHTML = `
+        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+          user.role === 'ADMIN' ? 'bg-purple-900/60 text-purple-200 border border-purple-700' :
+          user.role === 'MANAGER' ? 'bg-indigo-900/60 text-indigo-200 border border-indigo-700' :
+          user.role === 'SUPERVISOR' ? 'bg-emerald-900/60 text-emerald-200 border border-emerald-700' :
+          'bg-slate-800 text-slate-300'
+        }">${user.role}</span>
+      `;
+
+      if (user.role === 'MANAGER' || user.role === 'ADMIN') {
+        document.getElementById('governance-container').classList.remove('hidden');
+        document.getElementById('timesheet-section').classList.add('hidden');
+        document.getElementById('efficiency-metric-card').classList.add('hidden');
+        if (user.role === 'ADMIN') {
+          document.getElementById('btn-open-recycle-bin').classList.remove('hidden');
+        } else {
+          document.getElementById('btn-open-recycle-bin').classList.add('hidden');
+        }
+        renderGovernanceView();
+      } else {
+        document.getElementById('governance-container').classList.add('hidden');
+        document.getElementById('timesheet-section').classList.remove('hidden');
+        document.getElementById('efficiency-metric-card').classList.remove('hidden');
+        renderTimesheetGrid();
+      }
+      lucide.createIcons();
+    }
+
+    function renderTimesheetGrid() {
+      const user = state.currentUser;
+      if (!user) return;
+
+      const shiftConfig = SHIFTS[state.activeShift];
+      const targetHours = shiftConfig.targetWeekday;
+
+      if (!state.userProjects[user.empId]) {
+        state.userProjects[user.empId] = [{ code: 'PROJECT-01', hours: [0, 0, 0, 0, 0, 0, 0] }];
+        saveState();
+      }
+
+      const rows = state.userProjects[user.empId];
+      const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+
+      rows.forEach(r => {
+        r.hours.forEach((h, idx) => {
+          dayTotals[idx] += parseFloat(h) || 0;
+        });
+      });
+
+      for (let d = 0; d < 7; d++) {
+        const cell = document.getElementById(`target-cell-${d}`);
+        if (d === 0) cell.textContent = 'Holiday';
+        else if (d === 6) cell.textContent = '0.0';
+        else if (d === 5 && user.pattern === '5_DAYS') cell.textContent = '0.0';
+        else cell.textContent = targetHours.toFixed(1);
+      }
+
+      const dayClasses = dayTotals.map((tot, idx) => {
+        if (tot > 0) return 'col-updated';
+        if (idx === 0 || idx === 6) return 'col-holiday';
+        if (idx === 5 && user.pattern === '5_DAYS') return 'col-holiday';
+        if (idx >= 4) return 'col-upcoming';
+        return 'col-not-updated';
+      });
+
+      const tbody = document.getElementById('timesheet-tbody');
+      tbody.innerHTML = rows.map((r, rIdx) => {
+        const rowSum = r.hours.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+        return `
+          <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+            <td class="py-2.5 px-3 text-center font-mono text-slate-500 border-r border-slate-200">${rIdx + 1}</td>
+            <td class="py-2 px-2 border-r border-slate-200">
+              <input type="text" value="${r.code}" onchange="updateProjectCode('${rIdx}', this.value)" class="w-full text-xs font-mono font-semibold bg-transparent border-b border-dashed border-slate-300 focus:border-indigo-500 focus:outline-none uppercase text-slate-800">
+            </td>
+            <td class="py-2 px-3 text-slate-600 border-r border-slate-200">${state.currentMonth}</td>
+            ${r.hours.map((h, dIdx) => `
+              <td class="p-1 border-r border-slate-200 ${dayClasses[dIdx]} text-center">
+                <input type="number" step="0.5" min="0" max="24" value="${h === 0 ? '' : h}" placeholder="0.0" 
+                  onchange="updateCellHour('${rIdx}',${dIdx}, this.value)" 
+                  class="w-14 text-center text-xs font-mono font-medium py-1 rounded bg-white/70 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              </td>
+            `).join('')}
+            <td class="py-2 px-2 text-center font-mono font-bold text-slate-900 border-r border-slate-200">${rowSum.toFixed(1)}</td>
+            <td class="py-2 px-2 text-center">
+              <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1">
+                <i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      dayTotals.forEach((tot, idx) => {
+        const td = document.getElementById(`tot-day-${idx}`);
+        td.textContent = tot.toFixed(1);
+        td.className = `py-2.5 px-1 text-center font-mono font-bold border-r border-slate-200 ${dayClasses[idx]}`;
+      });
+
+      const grandTotal = dayTotals.reduce((a, b) => a + b, 0);
+      document.getElementById('tot-grand-total').textContent = grandTotal.toFixed(1);
+
+      const plannedWeeklyHours = user.pattern === '5_DAYS' ? (targetHours * 5) : (targetHours * 6);
+      const efficiency = plannedWeeklyHours > 0 ? ((grandTotal / plannedWeeklyHours) * 100).toFixed(1) : 0;
+
+      document.getElementById('kpi-planned').textContent = `${plannedWeeklyHours.toFixed(1)} hrs`;
+      document.getElementById('kpi-actual').textContent = `${grandTotal.toFixed(1)} hrs`;
+      const kpiEff = document.getElementById('kpi-efficiency');
+      kpiEff.textContent = `${efficiency}%`;
+
+      if (efficiency >= 100) kpiEff.className = 'text-sm font-bold text-emerald-600 font-mono';
+      else if (efficiency >= 85) kpiEff.className = 'text-sm font-bold text-indigo-600 font-mono';
+      else kpiEff.className = 'text-sm font-bold text-rose-600 font-mono';
+
+      lucide.createIcons();
+    }
+
+    window.updateCellHour = (rIdx, dIdx, val) => {
+      state.userProjects[state.currentUser.empId][rIdx].hours[dIdx] = parseFloat(val) || 0;
+      saveState();
+      renderTimesheetGrid();
+    };
+
+    window.updateProjectCode = (rIdx, val) => {
+      state.userProjects[state.currentUser.empId][rIdx].code = val.trim().toUpperCase() || 'PROJECT';
+      saveState();
+    };
+
+    window.deleteProjectRow = (rIdx) => {
+      state.userProjects[state.currentUser.empId].splice(rIdx, 1);
+      saveState();
+      renderTimesheetGrid();
+    };
+
+    function renderGovernanceView() {
+      const shiftConfig = SHIFTS[state.activeShift];
+      const targetHours = shiftConfig.targetWeekday;
+      const activeEmployees = state.users.filter(u => !u.isProtected && u.role !== 'ADMIN');
+
+      const effTbody = document.getElementById('efficiency-matrix-tbody');
+      effTbody.innerHTML = activeEmployees.map(emp => {
+        const rows = state.userProjects[emp.empId] || [];
+        let actualHours = 0;
+        rows.forEach(r => r.hours.forEach(h => actualHours += parseFloat(h) || 0));
+
+        const planned = emp.pattern === '5_DAYS' ? (targetHours * 5) : (targetHours * 6);
+        const eff = planned > 0 ? ((actualHours / planned) * 100).toFixed(1) : 0;
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
+            <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${emp.role}</span></td>
+            <td class="px-4 py-3 text-slate-600">${emp.pattern === '5_DAYS' ? '5 Days' : '6 Days'}</td>
+            <td class="px-4 py-3 text-center font-mono text-slate-600">${planned.toFixed(1)} hrs</td>
+            <td class="px-4 py-3 text-center font-mono font-bold text-slate-800">${actualHours.toFixed(1)} hrs</td>
+            <td class="px-4 py-3 text-center font-mono font-bold ${eff >= 100 ? 'text-emerald-600' : 'text-amber-600'}">${eff}%</td>
+            <td class="px-4 py-3 text-center">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${actualHours > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                ${actualHours > 0 ? 'Active' : 'Pending'}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const govTbody = document.getElementById('user-governance-tbody');
+      govTbody.innerHTML = activeEmployees.map(emp => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
+          <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
+          <td class="px-4 py-3 text-slate-600">${emp.role}</td>
+          <td class="px-4 py-3 text-slate-600">${emp.pattern === '5_DAYS' ? '5 Days' : '6 Days'}</td>
+          <td class="px-4 py-3 text-slate-600">${emp.dept}</td>
+          <td class="px-4 py-3 text-right space-x-2">
+            <button onclick="openEditUserModal('${emp.empId}')" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded font-medium transition">Edit</button>
+            <button onclick="promptDeleteUser('${emp.empId}')" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded font-medium transition">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+
+      renderRecycleBin();
+      lucide.createIcons();
+    }
+
+    function renderRecycleBin() {
+      const tbody = document.getElementById('recycle-bin-tbody');
+      if (state.recycleBin.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Recycle Bin is empty.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.recycleBin.map((item, idx) => `
+        <tr class="border-b border-slate-100">
+          <td class="px-3 py-2 font-mono font-bold">${item.empId}</td>
+          <td class="px-3 py-2">${item.name}</td>
+          <td class="px-3 py-2 text-slate-500 italic">${item.reason}</td>
+          <td class="px-3 py-2 text-right space-x-2">
+            <button onclick="restoreUser(${idx})" class="text-indigo-600 hover:underline">Restore</button>
+            <button onclick="purgeUserPermanently(${idx})" class="text-rose-600 hover:underline">Purge</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.openEditUserModal = (empId) => {
+      const emp = state.users.find(u => u.empId === empId);
+      if (!emp) return;
+
+      document.getElementById('form-user-is-edit').value = 'true';
+      document.getElementById('form-user-original-empid').value = emp.empId;
+      document.getElementById('input-user-empid').value = emp.empId;
+      document.getElementById('input-user-fullname').value = emp.name;
+      document.getElementById('input-user-password').value = emp.password;
+      document.getElementById('input-user-role').value = emp.role;
+      document.getElementById('input-user-pattern').value = emp.pattern;
+      document.getElementById('input-user-dept').value = emp.dept;
+      document.getElementById('user-modal-title').textContent = `Edit Details: ${emp.name}`;
+
+      document.getElementById('modal-user-form').classList.remove('hidden');
+    };
+
+    window.promptDeleteUser = (empId) => {
+      state.deleteCandidateEmpId = empId;
+      document.getElementById('delete-target-empid').textContent = empId;
+      document.getElementById('delete-reason').value = '';
+      document.getElementById('modal-delete-user').classList.remove('hidden');
+    };
+
+    window.restoreUser = (idx) => {
+      const restored = state.recycleBin.splice(idx, 1)[0];
+      delete restored.reason;
+      state.users.push(restored);
+      saveState();
+      renderGovernanceView();
+    };
+
+    window.purgeUserPermanently = (idx) => {
+      if (confirm('Permanently purge this record? This action is irreversible.')) {
+        state.recycleBin.splice(idx, 1);
+        saveState();
+        renderRecycleBin();
+      }
+    };
+
+    function setupEventListeners() {
+      const userBtn = document.getElementById('user-menu-btn');
+      const dropdown = document.getElementById('user-menu-dropdown');
+      userBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => dropdown.classList.add('hidden'));
+
+      document.getElementById('btn-logout').addEventListener('click', () => {
+        localStorage.removeItem('ent_logged_empid');
+        state.currentUser = null;
+        dropdown.classList.add('hidden');
+        openLoginModal();
+      });
+
+      document.getElementById('form-login').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const inputId = document.getElementById('login-empid').value.trim().toUpperCase();
+        const pass = document.getElementById('login-password').value.trim();
+
+        const matched = state.users.find(u => {
+          const id = u.empId.toUpperCase();
+          const matchesId = id === inputId || id === `EMP-${inputId}` || id.replace('EMP-', '') === inputId;
+          return matchesId && u.password === pass;
+        });
+
+        if (matched) {
+          document.getElementById('login-error-msg').classList.add('hidden');
+          document.getElementById('form-login').reset();
+          authenticateUser(matched);
+        } else {
+          document.getElementById('login-error-msg').classList.remove('hidden');
+        }
+      });
+
+      document.getElementById('btn-reset-cache').addEventListener('click', () => {
+        if (confirm('Reset database to clean defaults? This will restore ADMIN and standard test users.')) {
+          localStorage.clear();
+          location.reload();
+        }
+      });
+
+      document.getElementById('select-shift').addEventListener('change', (e) => {
+        state.activeShift = e.target.value;
+        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+          renderGovernanceView();
+        } else {
+          renderTimesheetGrid();
+        }
+      });
+
+      document.getElementById('select-week').addEventListener('change', (e) => {
+        state.selectedWeek = e.target.value;
+        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+          renderGovernanceView();
+        } else {
+          renderTimesheetGrid();
+        }
+      });
+
+      document.getElementById('btn-add-project').addEventListener('click', () => {
+        document.getElementById('modal-add-project').classList.remove('hidden');
+      });
+
+      document.getElementById('form-add-project').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const code = document.getElementById('input-new-project-code').value.trim().toUpperCase();
+        if (code && state.currentUser) {
+          state.userProjects[state.currentUser.empId].push({ code: code, hours: [0, 0, 0, 0, 0, 0, 0] });
+          saveState();
+          document.getElementById('modal-add-project').classList.add('hidden');
+          document.getElementById('form-add-project').reset();
+          renderTimesheetGrid();
+        }
+      });
+
+      document.getElementById('btn-save-draft').addEventListener('click', () => {
+        saveState();
+        alert('Work log saved as draft.');
+      });
+
+      document.getElementById('btn-submit-timesheet').addEventListener('click', () => {
+        saveState();
+        alert('Timesheet submitted successfully.');
+      });
+
+      document.getElementById('btn-open-export-modal').addEventListener('click', () => {
+        document.getElementById('modal-export').classList.remove('hidden');
+      });
+
+      document.getElementById('export-scope-type').addEventListener('change', (e) => {
+        if (e.target.value === 'WEEK') {
+          document.getElementById('export-week-selector-container').classList.remove('hidden');
+          document.getElementById('export-month-selector-container').classList.add('hidden');
+        } else {
+          document.getElementById('export-week-selector-container').classList.add('hidden');
+          document.getElementById('export-month-selector-container').classList.remove('hidden');
+        }
+      });
+
+      document.getElementById('btn-confirm-export').addEventListener('click', () => {
+        executeCsvExport();
+      });
+
+      document.getElementById('btn-create-user-modal').addEventListener('click', () => {
+        document.getElementById('form-user-is-edit').value = 'false';
+        document.getElementById('form-user-original-empid').value = '';
+        document.getElementById('form-user-governance').reset();
+        document.getElementById('user-modal-title').textContent = 'Create Employee Account';
+        document.getElementById('modal-user-form').classList.remove('hidden');
+      });
+
+      document.getElementById('form-user-governance').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const isEdit = document.getElementById('form-user-is-edit').value === 'true';
+        const originalEmpId = document.getElementById('form-user-original-empid').value;
+        const empId = document.getElementById('input-user-empid').value.trim().toUpperCase();
+        const name = document.getElementById('input-user-fullname').value.trim();
+        const password = document.getElementById('input-user-password').value.trim();
+        const role = document.getElementById('input-user-role').value;
+        const pattern = document.getElementById('input-user-pattern').value;
+        const dept = document.getElementById('input-user-dept').value.trim();
+
+        if (isEdit) {
+          const idx = state.users.findIndex(x => x.empId === originalEmpId);
+          if (idx !== -1) {
+            // Check if new Emp ID already exists elsewhere
+            if (originalEmpId !== empId && state.users.some(x => x.empId === empId)) {
+              alert('Employee ID already exists.');
+              return;
+            }
+            state.users[idx] = { ...state.users[idx], empId, name, password, role, pattern, dept };
+            if (originalEmpId !== empId) {
+              if (state.userProjects[originalEmpId]) {
+                state.userProjects[empId] = state.userProjects[originalEmpId];
+                delete state.userProjects[originalEmpId];
+              }
+            }
+            if (state.currentUser.empId === originalEmpId) {
+              state.currentUser = state.users[idx];
+              document.getElementById('nav-user-name').textContent = name;
+            }
+          }
+        } else {
+          if (state.users.some(x => x.empId === empId)) {
+            alert('Employee ID already exists.');
+            return;
+          }
+          state.users.push({ empId, name, password, role, pattern, dept });
+          state.userProjects[empId] = [{ code: 'PROJECT-01', hours: [0,0,0,0,0,0,0] }];
+        }
+
+        saveState();
+        document.getElementById('modal-user-form').classList.add('hidden');
+        renderGovernanceView();
+      });
+
+      document.getElementById('btn-edit-admin-profile').addEventListener('click', () => {
+        const admin = state.users.find(u => u.role === 'ADMIN');
+        if (admin) {
+          document.getElementById('admin-prof-empid').value = admin.empId;
+          document.getElementById('admin-prof-name').value = admin.name;
+          document.getElementById('admin-prof-password').value = admin.password;
+          document.getElementById('admin-prof-dept').value = admin.dept;
+          document.getElementById('modal-admin-profile').classList.remove('hidden');
+        }
+      });
+
+      document.getElementById('form-admin-profile').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const admin = state.users.find(u => u.role === 'ADMIN');
+        if (admin) {
+          admin.empId = document.getElementById('admin-prof-empid').value.trim().toUpperCase();
+          admin.name = document.getElementById('admin-prof-name').value.trim();
+          admin.password = document.getElementById('admin-prof-password').value.trim();
+          admin.dept = document.getElementById('admin-prof-dept').value.trim();
+          saveState();
+          document.getElementById('nav-user-name').textContent = admin.name;
+          document.getElementById('dropdown-user-id').textContent = `${admin.empId} (ADMIN)`;
+          document.getElementById('modal-admin-profile').classList.add('hidden');
+          alert('Admin profile updated successfully.');
+        }
+      });
+
+      document.getElementById('btn-confirm-delete-user').addEventListener('click', () => {
+        const reason = document.getElementById('delete-reason').value.trim();
+        if (!reason) {
+          alert('Please provide a deletion reason.');
+          return;
+        }
+
+        const idx = state.users.findIndex(u => u.empId === state.deleteCandidateEmpId);
+        if (idx !== -1) {
+          const removed = state.users.splice(idx, 1)[0];
+          removed.reason = reason;
+          state.recycleBin.push(removed);
+          saveState();
+          document.getElementById('modal-delete-user').classList.add('hidden');
+          renderGovernanceView();
+        }
+      });
+
+      document.getElementById('btn-open-recycle-bin').addEventListener('click', () => {
+        renderRecycleBin();
+        document.getElementById('modal-recycle-bin').classList.remove('hidden');
+      });
+
+      document.querySelectorAll('.btn-close-modal').forEach(btn => {
+        btn.addEventListener('click', () => btn.closest('.fixed').classList.add('hidden'));
+      });
+    }
+
+    function executeCsvExport() {
+      const scope = document.getElementById('export-scope-type').value;
+      const weekVal = document.getElementById('export-week-val').value;
+      const monthVal = document.getElementById('export-month-val').value;
+      const fileName = scope === 'WEEK' ? `Workforce_Efficiency_${weekVal}.csv` : `Workforce_Efficiency_${monthVal}.csv`;
+      const targetHours = SHIFTS[state.activeShift].targetWeekday;
+
+      let csv = '\uFEFF';
+      csv += 'Emp ID,Full Name,Role,Department,Work Pattern,Planned Target (Hrs),Actual Logged (Hrs),Efficiency (%)\n';
+
+      state.users.filter(u => !u.isProtected && u.role !== 'ADMIN').forEach(emp => {
+        const rows = state.userProjects[emp.empId] || [];
+        let actual = 0;
+        rows.forEach(r => r.hours.forEach(h => actual += parseFloat(h) || 0));
+        const planned = emp.pattern === '5_DAYS' ? (targetHours * 5) : (targetHours * 6);
+        const eff = planned > 0 ? ((actual / planned) * 100).toFixed(1) : 0;
+        csv += `"${emp.empId}","${emp.name}","${emp.role}","${emp.dept}","${emp.pattern}",${planned.toFixed(1)},${actual.toFixed(1)},${eff}%\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      document.getElementById('modal-export').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
