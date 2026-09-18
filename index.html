@@ -52,7 +52,7 @@
         <div class="relative">
           <button id="user-menu-btn" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg border border-slate-700 transition">
             <i data-lucide="user-circle-2" class="w-5 h-5 text-indigo-400"></i>
-            <span id="nav-user-name" class="text-xs font-semibold uppercase hover:underline">Loading...</span>
+            <span id="nav-user-name" onclick="event.stopPropagation(); window.openUserProfileModal();" class="text-xs font-semibold uppercase hover:underline cursor-pointer">Loading...</span>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
           </button>
 
@@ -223,12 +223,12 @@
         </div>
       </div>
 
-      <!-- User Accounts Governance Table (Guaranteed Header Element) -->
+      <!-- User Accounts Governance Table -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h3 class="text-sm font-bold text-slate-800">User Governance &amp; Accounts</h3>
-            <p class="text-xs text-slate-500">Manage employee accounts and permission tiers.</p>
+            <p class="text-xs text-slate-500">Manage employee accounts and credentials.</p>
           </div>
           <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg" id="user-count-badge">0 Users</span>
         </div>
@@ -378,7 +378,7 @@
     </div>
   </div>
 
-  <!-- USER PROFILE SUMMARY MODAL (ACCESSIBLE TO ALL USERS) -->
+  <!-- USER PROFILE SUMMARY MODAL -->
   <div id="modal-user-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-xs">
       <div class="flex items-center justify-between border-b pb-3">
@@ -403,7 +403,7 @@
     </div>
   </div>
 
-  <!-- ADMIN PROFILE EDIT MODAL (ADMIN EXCLUSIVE) -->
+  <!-- ADMIN PROFILE EDIT MODAL -->
   <div id="modal-admin-self-edit" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs animate-in zoom-in duration-150">
       <div class="flex items-center justify-between border-b pb-3">
@@ -449,7 +449,7 @@
         <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600 text-lg">&times;</button>
       </div>
 
-      <!-- Shift Hours -->
+      <!-- Shift Hours Settings -->
       <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
         <h4 class="font-bold text-indigo-950 mb-2">Shift Minimum Balance Setting:</h4>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -581,8 +581,8 @@
 
   <!-- ADMIN RECYCLE BIN MODAL -->
   <div id="modal-recycle-bin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl p-5 space-y-4 text-xs">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b pb-3">
         <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
           <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
           <span>Admin Recycle Bin &amp; Audit Logs</span>
@@ -608,7 +608,7 @@
   <!-- ADD PROJECT MODAL -->
   <div id="modal-add-project" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div class="flex items-center justify-between border-b pb-3">
         <h4 class="text-sm font-bold text-slate-800">Add Project Assignment</h4>
         <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
@@ -731,12 +731,12 @@
 
     let state = {
       currentUser: null,
-      users: JSON.parse(localStorage.getItem('ent_users_v35')) || DEFAULT_USERS,
-      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v35')) || [],
-      userProjects: JSON.parse(localStorage.getItem('ent_projects_v35')) || DEFAULT_PROJECTS,
-      lockedDays: JSON.parse(localStorage.getItem('ent_locked_days_v35')) || {},
-      calendarHolidays: JSON.parse(localStorage.getItem('ent_calendar_v35')) || DEFAULT_CALENDAR_HOLIDAYS,
-      shiftConfigs: JSON.parse(localStorage.getItem('ent_shifts_v35')) || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 },
+      users: JSON.parse(localStorage.getItem('ent_users_v36')) || DEFAULT_USERS,
+      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v36')) || [],
+      userProjects: JSON.parse(localStorage.getItem('ent_projects_v36')) || DEFAULT_PROJECTS,
+      lockedDays: JSON.parse(localStorage.getItem('ent_locked_days_v36')) || {},
+      calendarHolidays: JSON.parse(localStorage.getItem('ent_calendar_v36')) || DEFAULT_CALENDAR_HOLIDAYS,
+      shiftConfigs: JSON.parse(localStorage.getItem('ent_shifts_v36')) || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 },
       activeShift: 'GENERAL',
       selectedWeek: '25',
       currentMonth: 'September-2026'
@@ -774,12 +774,12 @@
     }
 
     function saveState() {
-      localStorage.setItem('ent_users_v35', JSON.stringify(state.users));
-      localStorage.setItem('ent_recycle_v35', JSON.stringify(state.recycleBin));
-      localStorage.setItem('ent_projects_v35', JSON.stringify(state.userProjects));
-      localStorage.setItem('ent_locked_days_v35', JSON.stringify(state.lockedDays));
-      localStorage.setItem('ent_calendar_v35', JSON.stringify(state.calendarHolidays));
-      localStorage.setItem('ent_shifts_v35', JSON.stringify(state.shiftConfigs));
+      localStorage.setItem('ent_users_v36', JSON.stringify(state.users));
+      localStorage.setItem('ent_recycle_v36', JSON.stringify(state.recycleBin));
+      localStorage.setItem('ent_projects_v36', JSON.stringify(state.userProjects));
+      localStorage.setItem('ent_locked_days_v36', JSON.stringify(state.lockedDays));
+      localStorage.setItem('ent_calendar_v36', JSON.stringify(state.calendarHolidays));
+      localStorage.setItem('ent_shifts_v36', JSON.stringify(state.shiftConfigs));
 
       if (isCloudConnected && db) {
         db.collection("enterprise_workforce").doc("portal_state").set({
@@ -936,9 +936,11 @@
       return state.userProjects[empId][weekNum];
     }
 
+    // Standardized Calendar Calculations: Tuesday to Saturday (Indices 1 to 5) = 5 days default (37.5 hrs)
+    // Monday (0) and Sunday (6) excluded unless explicitly overridden as working
     function calculateCalendarEfficiency(dayTotals, targetHours, weekNumber) {
       const activeWeek = String(weekNumber || state.selectedWeek);
-      let activeDays = new Set([0, 1, 2, 3, 4, 5]);
+      let activeDays = new Set([1, 2, 3, 4, 5]);
 
       state.calendarHolidays.forEach(h => {
         if (String(h.week) === activeWeek) {
@@ -973,7 +975,7 @@
       if (calHoliday && (calHoliday.type === 'holiday' || calHoliday.type === 'sunday')) {
         return 'col-holiday';
       }
-      if (dayIdx === 6 && (!calHoliday || calHoliday.type !== 'working')) {
+      if ((dayIdx === 0 || dayIdx === 6) && (!calHoliday || calHoliday.type !== 'working')) {
         return 'col-holiday';
       }
 
@@ -1028,10 +1030,10 @@
         if (holidayRule && (holidayRule.type === 'holiday' || holidayRule.type === 'sunday')) {
           cell.textContent = holidayRule.type === 'holiday' ? 'Holiday' : '0.0';
           cell.className = "py-2 px-1 text-center font-mono border-r border-slate-200 col-holiday font-bold text-xs";
-        } else if (d === 6) {
-          const isMandatoryWorkSun = state.calendarHolidays.some(h => String(h.week) === String(state.selectedWeek) && h.dayCol === 6 && h.type === 'working');
-          cell.textContent = isMandatoryWorkSun ? targetHours.toFixed(1) : '0.0';
-          cell.className = isMandatoryWorkSun ? "py-2 px-1 text-center font-mono border-r border-slate-200" : "py-2 px-1 text-center font-mono border-r border-slate-200 col-holiday font-bold text-xs";
+        } else if (d === 0 || d === 6) {
+          const isMandatoryWork = state.calendarHolidays.some(h => String(h.week) === String(state.selectedWeek) && h.dayCol === d && h.type === 'working');
+          cell.textContent = isMandatoryWork ? targetHours.toFixed(1) : (d === 0 ? 'Holiday' : '0.0');
+          cell.className = isMandatoryWork ? "py-2 px-1 text-center font-mono border-r border-slate-200" : "py-2 px-1 text-center font-mono border-r border-slate-200 col-holiday font-bold text-xs";
         } else {
           cell.textContent = targetHours.toFixed(1);
           cell.className = "py-2 px-1 text-center font-mono border-r border-slate-200";
@@ -1058,12 +1060,12 @@
               ${r.hours.map((h, dIdx) => {
                 const isDayLocked = weekLocked.includes(dIdx);
                 const isCalHoliday = state.calendarHolidays.some(x => String(x.week) === String(state.selectedWeek) && x.dayCol === dIdx && (x.type === 'holiday' || x.type === 'sunday'));
-                const isSundayOff = (dIdx === 6 && !state.calendarHolidays.some(x => String(x.week) === String(state.selectedWeek) && x.dayCol === 6 && x.type === 'working'));
+                const isDefaultOff = (dIdx === 0 || dIdx === 6) && !state.calendarHolidays.some(x => String(x.week) === String(state.selectedWeek) && x.dayCol === dIdx && x.type === 'working');
 
-                if (isCalHoliday || isSundayOff) {
+                if (isCalHoliday || isDefaultOff) {
                   return `
                     <td class="p-1 border-r border-slate-200 ${dayClasses[dIdx]} font-bold text-center">
-                      <span class="inline-block py-1 px-1.5 text-[10px] uppercase font-extrabold text-orange-900">Holiday/Off</span>
+                      <span class="inline-block py-1 px-1.5 text-[10px] uppercase font-extrabold text-orange-900">${dIdx === 0 ? 'Holiday' : 'Sunday Off'}</span>
                     </td>
                   `;
                 }
@@ -1079,773 +1081,802 @@
                 `;
               }).join('')}
 
-              <td class="py-2 px-2 text-center font-mono font-bold text-slate-900 border-r border-slate-200">${rowSum.toFixed(1)}</td>
-              <td class="py-2 px-2 text-center">
-                <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1">
-                  <i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i>
-                </button>
-              </td>
-            </tr>
-          `;
-        }).join('');
-      }
-
-      dayTotals.forEach((tot, idx) => {
-        const td = document.getElementById(`tot-day-${idx}`);
-        if (td) {
-          td.textContent = tot.toFixed(1);
-          td.className = `py-2.5 px-1 text-center font-mono font-bold border-r border-slate-200 ${dayClasses[idx]}`;
-        }
-      });
-
-      const grandTotal = dayTotals.reduce((a, b) => a + b, 0);
-      const grandEl = document.getElementById('tot-grand-total');
-      if (grandEl) grandEl.textContent = grandTotal.toFixed(1);
-
-      const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
-
-      const kpiPlanned = document.getElementById('kpi-planned');
-      if (kpiPlanned) kpiPlanned.textContent = `${metrics.plannedTarget.toFixed(1)} hrs`;
-
-      const kpiActual = document.getElementById('kpi-actual');
-      if (kpiActual) kpiActual.textContent = `${metrics.actualLogged.toFixed(1)} hrs`;
-
-      const kpiEff = document.getElementById('kpi-efficiency');
-      if (kpiEff) {
-        kpiEff.textContent = `${metrics.efficiency}%`;
-        if (metrics.efficiency >= 100) kpiEff.className = 'text-sm font-bold text-emerald-600 font-mono';
-        else if (metrics.efficiency >= 85) kpiEff.className = 'text-sm font-bold text-indigo-600 font-mono';
-        else kpiEff.className = 'text-sm font-bold text-rose-600 font-mono';
-      }
-
-      lucide.createIcons();
-    }
-
-    window.updateCellHour = (rIdx, dIdx, val) => {
-      const user = state.currentUser;
-      const weekLocked = (state.lockedDays[user.empId] && state.lockedDays[user.empId][state.selectedWeek]) || [];
-      if (weekLocked.includes(dIdx)) {
-        showToast('This work day has been submitted and locked.', 'error');
-        return;
-      }
-      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
-      rows[rIdx].hours[dIdx] = parseFloat(val) || 0;
-      saveState();
-      renderTimesheetGrid();
-    };
-
-    window.updateProjectCode = (rIdx, val) => {
-      const user = state.currentUser;
-      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
-      rows[rIdx].code = val.trim().toUpperCase() || 'PROJECT';
-      saveState();
-    };
-
-    window.deleteProjectRow = (rIdx) => {
-      const user = state.currentUser;
-      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
-      if (rows.length <= 1) {
-        showToast('At least one project row is required.', 'error');
-        return;
-      }
-      rows.splice(rIdx, 1);
-      saveState();
-      renderTimesheetGrid();
-    };
-
-    // FIXED: SAFE NULL-CHECKED GOVERNANCE RENDER (ELIMINATES TypeError ON TEXTCONTENT)
-    function renderGovernanceView() {
-      const weekMeta = getWeekDates(state.selectedWeek);
-      state.currentMonth = weekMeta.monthStr;
-      
-      const monthDisplay = document.getElementById('display-month');
-      if (monthDisplay) monthDisplay.textContent = weekMeta.monthStr;
-
-      const targetHours = state.shiftConfigs[state.activeShift] || SHIFTS[state.activeShift].targetWeekday;
-      const efficiencyEmployees = state.users.filter(u => !u.isProtected && u.role !== 'ADMIN' && u.role !== 'MANAGER');
-      const allGovernanceUsers = state.users.filter(u => !u.isProtected);
-
-      // Safe update for user-count-badge
-      const userCountBadge = document.getElementById('user-count-badge');
-      if (userCountBadge) {
-        userCountBadge.textContent = `${allGovernanceUsers.length} Accounts Managed`;
-      }
-
-      const chartWeekBadge = document.getElementById('chart-week-badge');
-      if (chartWeekBadge) {
-        chartWeekBadge.textContent = `Week ${state.selectedWeek} (${weekMeta.monthStr})`;
-      }
-
-      const tableWeekHeading = document.getElementById('table-week-heading');
-      if (tableWeekHeading) {
-        tableWeekHeading.textContent = `Team Work Efficiency Matrix (Week ${state.selectedWeek})`;
-      }
-
-      let chartLabels = [];
-      let chartEfficiencies = [];
-
-      const effTbody = document.getElementById('efficiency-matrix-tbody');
-      if (effTbody) {
-        effTbody.innerHTML = efficiencyEmployees.map(emp => {
-          const rows = getUserWeekProjects(emp.empId, state.selectedWeek);
-          const dayTotals = [0, 0, 0, 0, 0, 0, 0];
-          rows.forEach(r => r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0));
-
-          const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
-          const weekLocked = (state.lockedDays[emp.empId] && state.lockedDays[emp.empId][state.selectedWeek]) || [];
-
-          chartLabels.push(emp.name);
-          chartEfficiencies.push(metrics.efficiency);
-
-          return `
-            <tr class="hover:bg-slate-50 transition">
-              <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
-              <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
-              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${emp.role}</span></td>
-              <td class="px-4 py-3 text-center font-mono text-slate-600">${metrics.plannedTarget.toFixed(1)} hrs</td>
-              <td class="px-4 py-3 text-center font-mono font-bold text-slate-800">${metrics.actualLogged.toFixed(1)} hrs</td>
-              <td class="px-4 py-3 text-center font-mono font-bold ${metrics.efficiency >= 100 ? 'text-emerald-600' : 'text-amber-600'}">${metrics.efficiency}%</td>
-              <td class="px-4 py-3 text-center">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${weekLocked.length > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">
-                  ${weekLocked.length > 0 ? `${weekLocked.length} Day(s) Locked` : 'Editable'}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-right">
-                ${weekLocked.length > 0 ? `
-                  <button onclick="window.unlockAllDaysForEmployee('${emp.empId}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded font-semibold transition text-xs">Unlock</button>
-                ` : `<span class="text-[11px] text-slate-400">Open</span>`}
-              </td>
-            </tr>
-          `;
-        }).join('');
-      }
-
-      const govTbody = document.getElementById('user-governance-tbody');
-      if (govTbody) {
-        govTbody.innerHTML = allGovernanceUsers.map(emp => `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
-            <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
-            <td class="px-4 py-3 font-mono text-xs text-slate-500">${emp.password}</td>
-            <td class="px-4 py-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
-                emp.role === 'MANAGER' ? 'bg-indigo-100 text-indigo-800' :
-                emp.role === 'SUPERVISOR' ? 'bg-emerald-100 text-emerald-800' :
-                emp.role === 'MONITORING' ? 'bg-amber-100 text-amber-800' :
-                'bg-slate-100 text-slate-700'
-              }">${emp.role}</span>
-            </td>
-            <td class="px-4 py-3 text-slate-600">${emp.dept || 'Operations'}</td>
-            <td class="px-4 py-3 text-right space-x-2">
-              <button onclick="window.openEditUserModal('${emp.empId}')" class="inline-flex items-center space-x-1 px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold transition text-xs">
-                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                <span>Edit</span>
+            <td class="py-2 px-2 text-center font-mono font-bold text-slate-900 border-r border-slate-200">${rowSum.toFixed(1)}</td>
+            <td class="py-2 px-2 text-center">
+              <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1">
+                <i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i>
               </button>
-              <button onclick="window.promptDeleteUser('${emp.empId}')" class="inline-flex items-center space-x-1 px-2 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium transition text-xs">
-                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                <span>Delete</span>
-              </button>
-            </td>
-          </tr>
-        `).join('');
-      }
-
-      renderEfficiencyBarChart(chartLabels, chartEfficiencies);
-      renderCalendarDeclarationsTable();
-      renderRecycleBin();
-      lucide.createIcons();
-    }
-
-    function renderEfficiencyBarChart(labels, values) {
-      const ctx = document.getElementById('teamEfficiencyChart');
-      if (!ctx) return;
-      if (efficiencyChartInstance) efficiencyChartInstance.destroy();
-
-      efficiencyChartInstance = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: values,
-            backgroundColor: values.map(v => v >= 100 ? '#059669' : '#4f46e5'),
-            borderRadius: 4,
-            barThickness: 32
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#334155' } },
-            y: { beginAtZero: true, max: 140, grid: { color: '#f1f5f9' }, ticks: { callback: v => v + '%' } }
-          },
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: { label: c => ` Efficiency: ${c.parsed.y}%` } }
-          }
-        }
-      });
-    }
-
-    window.copyGraphToClipboard = async () => {
-      const chartCanvas = document.getElementById('teamEfficiencyChart');
-      if (!chartCanvas) {
-        showToast('Chart not available.', 'error');
-        return;
-      }
-
-      const exportCanvas = document.createElement('canvas');
-      exportCanvas.width = chartCanvas.width;
-      exportCanvas.height = chartCanvas.height;
-      const ctx = exportCanvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-      ctx.drawImage(chartCanvas, 0, 0);
-
-      if (navigator.clipboard && window.ClipboardItem) {
-        try {
-          const blob = await new Promise(resolve => exportCanvas.toBlob(resolve, 'image/png'));
-          if (blob) {
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-            showToast('Graph copied to clipboard! Ready to paste.', 'success');
-            return;
-          }
-        } catch (err) {
-          console.warn('Clipboard write restricted. Displaying preview fallback.', err);
-        }
-      }
-
-      const dataUrl = exportCanvas.toDataURL('image/png');
-      openChartCopyModal(dataUrl);
-    };
-
-    function openChartCopyModal(imageDataUrl) {
-      let modal = document.getElementById('modal-chart-copy-preview');
-      if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'modal-chart-copy-preview';
-        modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4';
-        modal.innerHTML = `
-          <div class="bg-white rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl text-xs border border-slate-200">
-            <div class="flex items-center justify-between border-b pb-2">
-              <div class="flex items-center space-x-2 text-indigo-900 font-bold">
-                <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i>
-                <span class="text-sm">Copy Chart Image</span>
-              </div>
-              <button onclick="document.getElementById('modal-chart-copy-preview').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
-            </div>
-            <p class="text-slate-500 text-[11px]">
-              Right-click the image below and select <strong>"Copy Image"</strong> to paste directly into Email or PowerPoint:
-            </p>
-            <div class="border rounded-xl p-2 bg-slate-50 flex justify-center overflow-hidden">
-              <img id="chart-preview-img" src="" alt="Chart Preview" class="max-h-60 rounded shadow-sm object-contain" />
-            </div>
-            <div class="flex justify-end space-x-2 pt-2">
-              <a id="chart-download-fallback-link" href="" download="Team_Efficiency_Chart.png" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow inline-flex items-center space-x-1.5">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                <span>Download PNG</span>
-              </a>
-              <button onclick="document.getElementById('modal-chart-copy-preview').classList.add('hidden')" class="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg">
-                Close
-              </button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-        lucide.createIcons();
-      }
-
-      document.getElementById('chart-preview-img').src = imageDataUrl;
-      document.getElementById('chart-download-fallback-link').href = imageDataUrl;
-      modal.classList.remove('hidden');
-    }
-
-    window.openUserProfileModal = () => {
-      const user = state.currentUser;
-      if (!user) return;
-      document.getElementById('prof-modal-name').textContent = user.name || 'User';
-      document.getElementById('prof-modal-empid').textContent = user.empId;
-      document.getElementById('prof-modal-role').textContent = user.role;
-      document.getElementById('prof-modal-dept').textContent = user.dept || 'Operations';
-      document.getElementById('prof-modal-shift').textContent = SHIFTS[state.activeShift] ? SHIFTS[state.activeShift].label : 'General Shift';
-      document.getElementById('modal-user-profile').classList.remove('hidden');
-    };
-
-    function renderCalendarDeclarationsTable() {
-      const tbody = document.getElementById('holidays-tbody');
-      if (!tbody) return;
-
-      const filterSelect = document.getElementById('calendar-table-filter');
-      const filterVal = filterSelect ? filterSelect.value : 'ALL';
-
-      const filtered = state.calendarHolidays.filter(item => {
-        return filterVal === 'ALL' || String(item.week) === String(filterVal);
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No calendar overrides found for this filter.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(item => {
-        let impactBadge = '';
-        if (item.type === 'holiday' || item.type === 'sunday') {
-          impactBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Excluded (0 hrs planned)</span>`;
-        } else {
-          impactBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Added to Planned Target</span>`;
-        }
-
-        return `
-          <tr class="border-b hover:bg-slate-50">
-            <td class="p-2.5 font-bold text-slate-800">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 mr-1.5">Week ${item.week}</span>
-              <span>${item.dayName || item.date}</span>
-            </td>
-            <td class="p-2.5 uppercase font-bold text-xs text-indigo-900">${item.type}</td>
-            <td class="p-2.5 font-medium text-slate-700">${item.label}</td>
-            <td class="p-2.5 text-center">${impactBadge}</td>
-            <td class="p-2.5 text-right space-x-1">
-              <button onclick="window.editCalendarHoliday('${item.id}')" class="text-indigo-600 hover:text-indigo-900 font-bold px-2 py-1 bg-indigo-50 rounded">Edit</button>
-              <button onclick="window.removeCalendarHoliday('${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">Delete</button>
             </td>
           </tr>
         `;
       }).join('');
     }
 
-    window.editCalendarHoliday = id => {
-      const item = state.calendarHolidays.find(x => String(x.id) === String(id));
-      if (!item) return;
-
-      document.getElementById('calendar-edit-id').value = item.id;
-      document.getElementById('holiday-input-week').value = item.week;
-      document.getElementById('holiday-input-date').value = item.date;
-      document.getElementById('holiday-input-type').value = item.type;
-      document.getElementById('holiday-input-label').value = item.label;
-
-      document.getElementById('calendar-form-heading').textContent = `Edit Override (${item.dayName || item.date}):`;
-      document.getElementById('btn-save-cal-entry').textContent = 'Update Declaration';
-      document.getElementById('btn-cancel-cal-edit').classList.remove('hidden');
-    };
-
-    window.cancelCalendarEdit = () => {
-      document.getElementById('calendar-edit-id').value = '';
-      document.getElementById('calendar-form-heading').textContent = 'Declare Date / Holiday Override:';
-      document.getElementById('btn-save-cal-entry').textContent = 'Save Calendar Entry';
-      document.getElementById('btn-cancel-cal-edit').classList.add('hidden');
-      document.getElementById('holiday-input-label').value = 'Holiday';
-    };
-
-    window.saveCustomHolidayEntry = () => {
-      const editId = document.getElementById('calendar-edit-id').value;
-      const weekVal = document.getElementById('holiday-input-week').value;
-      const dateStr = document.getElementById('holiday-input-date').value;
-      const typeStr = document.getElementById('holiday-input-type').value;
-      const labelStr = document.getElementById('holiday-input-label').value.trim();
-
-      if (!dateStr || !labelStr) {
-        showToast('Please specify a valid date and description.', 'error');
-        return;
+    dayTotals.forEach((tot, idx) => {
+      const td = document.getElementById(`tot-day-${idx}`);
+      if (td) {
+        td.textContent = tot.toFixed(1);
+        td.className = `py-2.5 px-1 text-center font-mono font-bold border-r border-slate-200 ${dayClasses[idx]}`;
       }
+    });
 
-      const parts = dateStr.split('-');
-      const year = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1;
-      const day = parseInt(parts[2], 10);
-      const dateObj = new Date(year, month, day);
+    const grandTotal = dayTotals.reduce((a, b) => a + b, 0);
+    const grandEl = document.getElementById('tot-grand-total');
+    if (grandEl) grandEl.textContent = grandTotal.toFixed(1);
 
-      let dayIndex = dateObj.getDay() - 1;
-      if (dayIndex < 0) dayIndex = 6;
+    const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
 
-      const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const formattedDayName = `${dayNames[dayIndex]}, ${dateObj.getDate()} ${monthNames[dateObj.getMonth()]}`;
+    const kpiPlanned = document.getElementById('kpi-planned');
+    if (kpiPlanned) kpiPlanned.textContent = `${metrics.plannedTarget.toFixed(1)} hrs`;
 
-      const payload = {
-        id: editId || 'cal_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
-        week: String(weekVal),
-        date: dateStr,
-        dayCol: dayIndex,
-        dayName: formattedDayName,
-        type: typeStr,
-        label: labelStr
-      };
+    const kpiActual = document.getElementById('kpi-actual');
+    if (kpiActual) kpiActual.textContent = `${metrics.actualLogged.toFixed(1)} hrs`;
 
-      if (editId) {
-        const idx = state.calendarHolidays.findIndex(x => String(x.id) === String(editId));
-        if (idx > -1) state.calendarHolidays[idx] = payload;
-        showToast(`Updated week ${weekVal} override: ${formattedDayName}.`, 'success');
-        cancelCalendarEdit();
-      } else {
-        const existingIdx = state.calendarHolidays.findIndex(x => String(x.week) === String(weekVal) && x.dayCol === dayIndex);
-        if (existingIdx > -1) {
-          state.calendarHolidays[existingIdx] = payload;
-          showToast(`Updated existing override for ${formattedDayName} in Week ${weekVal}.`, 'success');
-        } else {
-          state.calendarHolidays.push(payload);
-          showToast(`Added week ${weekVal} override: ${formattedDayName}.`, 'success');
-        }
-      }
+    const kpiEff = document.getElementById('kpi-efficiency');
+    if (kpiEff) {
+      kpiEff.textContent = `${metrics.efficiency}%`;
+      if (metrics.efficiency >= 100) kpiEff.className = 'text-sm font-bold text-emerald-600 font-mono';
+      else if (metrics.efficiency >= 85) kpiEff.className = 'text-sm font-bold text-indigo-600 font-mono';
+      else kpiEff.className = 'text-sm font-bold text-rose-600 font-mono';
+    }
 
-      const filterSelect = document.getElementById('calendar-table-filter');
-      if (filterSelect && filterSelect.value !== 'ALL' && filterSelect.value !== String(weekVal)) {
-        filterSelect.value = String(weekVal);
-      }
+    lucide.createIcons();
+  }
 
-      saveState();
-      renderCalendarDeclarationsTable();
-      renderGovernanceView();
-      renderTimesheetGrid();
-    };
+  window.updateCellHour = (rIdx, dIdx, val) => {
+    const user = state.currentUser;
+    const weekLocked = (state.lockedDays[user.empId] && state.lockedDays[user.empId][state.selectedWeek]) || [];
+    if (weekLocked.includes(dIdx)) {
+      showToast('This work day has been submitted and locked.', 'error');
+      return;
+    }
+    const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+    rows[rIdx].hours[dIdx] = parseFloat(val) || 0;
+    saveState();
+    renderTimesheetGrid();
+  };
 
-    window.removeCalendarHoliday = id => {
-      const idx = state.calendarHolidays.findIndex(x => String(x.id) === String(id));
-      if (idx > -1) {
-        const removed = state.calendarHolidays.splice(idx, 1)[0];
-        saveState();
-        renderCalendarDeclarationsTable();
-        renderGovernanceView();
-        renderTimesheetGrid();
-        showToast(`Deleted override for ${removed.dayName || removed.date} (Week ${removed.week}).`, 'info');
-      }
-    };
+  window.updateProjectCode = (rIdx, val) => {
+    const user = state.currentUser;
+    const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+    rows[rIdx].code = val.trim().toUpperCase() || 'PROJECT';
+    saveState();
+  };
 
-    window.saveShiftConfigs = () => {
-      const s1 = parseFloat(document.getElementById('cfg-shift1-hrs').value) || 7.5;
-      const s2 = parseFloat(document.getElementById('cfg-shift2-hrs').value) || 7.5;
-      const s3 = parseFloat(document.getElementById('cfg-shift3-hrs').value) || 6.5;
-      const sG = parseFloat(document.getElementById('cfg-shiftG-hrs').value) || 7.5;
+  window.deleteProjectRow = (rIdx) => {
+    const user = state.currentUser;
+    const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+    if (rows.length <= 1) {
+      showToast('At least one project row is required.', 'error');
+      return;
+    }
+    rows.splice(rIdx, 1);
+    saveState();
+    renderTimesheetGrid();
+  };
 
-      state.shiftConfigs = { '1ST': s1, '2ND': s2, '3RD': s3, 'GENERAL': sG };
-      saveState();
-      renderGovernanceView();
-      renderTimesheetGrid();
-      showToast(`Updated shift minimums: 1st=${s1}h, 2nd=${s2}h, 3rd=${s3}h, General=${sG}h`, 'success');
-    };
+  function renderGovernanceView() {
+    const weekMeta = getWeekDates(state.selectedWeek);
+    state.currentMonth = weekMeta.monthStr;
+    
+    const monthDisplay = document.getElementById('display-month');
+    if (monthDisplay) monthDisplay.textContent = weekMeta.monthStr;
 
-    window.unlockAllDaysForEmployee = empId => {
-      if (!state.lockedDays[empId]) state.lockedDays[empId] = {};
-      state.lockedDays[empId][state.selectedWeek] = [];
-      saveState();
-      renderGovernanceView();
-      showToast(`Unlocked days for ${empId} in Week ${state.selectedWeek}.`, 'success');
-    };
+    const targetHours = state.shiftConfigs[state.activeShift] || SHIFTS[state.activeShift].targetWeekday;
+    const efficiencyEmployees = state.users.filter(u => !u.isProtected && u.role !== 'ADMIN' && u.role !== 'MANAGER');
+    const allGovernanceUsers = state.users.filter(u => !u.isProtected);
 
-    window.openEditUserModal = empId => {
-      const emp = state.users.find(u => u.empId.toUpperCase() === empId.toUpperCase());
-      if (!emp) return;
+    const userCountBadge = document.getElementById('user-count-badge');
+    if (userCountBadge) {
+      userCountBadge.textContent = `${allGovernanceUsers.length} Accounts Managed`;
+    }
 
-      document.getElementById('form-user-original-empid').value = emp.empId;
-      document.getElementById('input-user-empid').value = emp.empId;
-      document.getElementById('input-user-fullname').value = emp.name;
-      document.getElementById('input-user-password').value = emp.password;
-      document.getElementById('input-user-role').value = emp.role;
-      document.getElementById('input-user-dept').value = emp.dept || 'Operations';
+    const chartWeekBadge = document.getElementById('chart-week-badge');
+    if (chartWeekBadge) {
+      chartWeekBadge.textContent = `Week ${state.selectedWeek} (${weekMeta.monthStr})`;
+    }
 
-      document.getElementById('user-modal-title-text').textContent = `Edit Details: ${emp.name}`;
-      document.getElementById('btn-save-user-text').textContent = 'Save Changes';
-      document.getElementById('modal-user-form').classList.remove('hidden');
-    };
+    const tableWeekHeading = document.getElementById('table-week-heading');
+    if (tableWeekHeading) {
+      tableWeekHeading.textContent = `Team Work Efficiency Matrix (Week ${state.selectedWeek})`;
+    }
 
-    window.promptDeleteUser = empId => {
-      const target = state.users.find(u => u.empId === empId);
-      if (!target) return;
-      if (state.currentUser && state.currentUser.empId === empId) {
-        showToast('Cannot delete active logged-in session!', 'error');
-        return;
-      }
-      const reason = prompt(`Provide mandatory deletion reason for ${target.name}:`);
-      if (reason && reason.trim()) {
-        const idx = state.users.findIndex(u => u.empId === empId);
-        if (idx > -1) {
-          const removed = state.users.splice(idx, 1)[0];
-          removed.reason = reason.trim();
-          state.recycleBin.push(removed);
-          saveState();
-          renderGovernanceView();
-          showToast(`Archived ${empId} to Recycle Bin.`, 'info');
-        }
-      }
-    };
+    let chartLabels = [];
+    let chartEfficiencies = [];
 
-    function renderRecycleBin() {
-      const tbody = document.getElementById('recycle-bin-tbody');
-      if (!tbody) return;
-      if (state.recycleBin.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Recycle Bin is empty.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = state.recycleBin.map((item, idx) => `
-        <tr class="border-b border-slate-100">
-          <td class="px-3 py-2 font-mono font-bold">${item.empId}</td>
-          <td class="px-3 py-2">${item.name}</td>
-          <td class="px-3 py-2 text-rose-700 italic">${item.reason}</td>
-          <td class="px-3 py-2 text-right space-x-2">
-            <button onclick="window.restoreUser(${idx})" class="text-indigo-600 hover:underline">Restore</button>
-            <button onclick="window.purgeUserPermanently(${idx})" class="text-rose-600 hover:underline">Purge</button>
+    const effTbody = document.getElementById('efficiency-matrix-tbody');
+    if (effTbody) {
+      effTbody.innerHTML = efficiencyEmployees.map(emp => {
+        const rows = getUserWeekProjects(emp.empId, state.selectedWeek);
+        const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+        rows.forEach(r => r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0));
+
+        const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
+        const weekLocked = (state.lockedDays[emp.empId] && state.lockedDays[emp.empId][state.selectedWeek]) || [];
+
+        chartLabels.push(emp.name);
+        chartEfficiencies.push(metrics.efficiency);
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
+            <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
+            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${emp.role}</span></td>
+            <td class="px-4 py-3 text-center font-mono text-slate-600">${metrics.plannedTarget.toFixed(1)} hrs</td>
+            <td class="px-4 py-3 text-center font-mono font-bold text-slate-800">${metrics.actualLogged.toFixed(1)} hrs</td>
+            <td class="px-4 py-3 text-center font-mono font-bold ${metrics.efficiency >= 100 ? 'text-emerald-600' : 'text-amber-600'}">${metrics.efficiency}%</td>
+            <td class="px-4 py-3 text-center">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${weekLocked.length > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">
+                ${weekLocked.length > 0 ? `${weekLocked.length} Day(s) Locked` : 'Editable'}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-right">
+              ${weekLocked.length > 0 ? `
+                <button onclick="window.unlockAllDaysForEmployee('${emp.empId}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded font-semibold transition text-xs">Unlock</button>
+              ` : `<span class="text-[11px] text-slate-400">Open</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    const govTbody = document.getElementById('user-governance-tbody');
+    if (govTbody) {
+      govTbody.innerHTML = allGovernanceUsers.map(emp => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
+          <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
+          <td class="px-4 py-3 font-mono text-xs text-slate-500">${emp.password}</td>
+          <td class="px-4 py-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
+              emp.role === 'MANAGER' ? 'bg-indigo-100 text-indigo-800' :
+              emp.role === 'SUPERVISOR' ? 'bg-emerald-100 text-emerald-800' :
+              emp.role === 'MONITORING' ? 'bg-amber-100 text-amber-800' :
+              'bg-slate-100 text-slate-700'
+            }">${emp.role}</span>
+          </td>
+          <td class="px-4 py-3 text-slate-600">${emp.dept || 'Operations'}</td>
+          <td class="px-4 py-3 text-right space-x-2">
+            <button onclick="window.openEditUserModal('${emp.empId}')" class="inline-flex items-center space-x-1 px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold transition text-xs">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              <span>Edit</span>
+            </button>
+            <button onclick="window.promptDeleteUser('${emp.empId}')" class="inline-flex items-center space-x-1 px-2 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 font-medium transition text-xs">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <span>Delete</span>
+            </button>
           </td>
         </tr>
       `).join('');
     }
 
-    window.restoreUser = idx => {
-      const restored = state.recycleBin.splice(idx, 1)[0];
-      delete restored.reason;
-      state.users.push(restored);
-      saveState();
-      renderGovernanceView();
-      showToast(`Restored user: ${restored.empId}`, 'success');
-    };
+    renderEfficiencyBarChart(chartLabels, chartEfficiencies);
+    renderCalendarDeclarationsTable();
+    renderRecycleBin();
+    lucide.createIcons();
+  }
 
-    window.purgeUserPermanently = idx => {
-      if (confirm('Permanently purge this record?')) {
-        state.recycleBin.splice(idx, 1);
-        saveState();
-        renderRecycleBin();
-        showToast('Record purged permanently.', 'info');
+  function renderEfficiencyBarChart(labels, values) {
+    const ctx = document.getElementById('teamEfficiencyChart');
+    if (!ctx) return;
+    if (efficiencyChartInstance) efficiencyChartInstance.destroy();
+
+    efficiencyChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: values.map(v => v >= 100 ? '#059669' : '#4f46e5'),
+          borderRadius: 4,
+          barThickness: 32
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11, weight: '600' }, color: '#334155' } },
+          y: { beginAtZero: true, max: 140, grid: { color: '#f1f5f9' }, ticks: { callback: v => v + '%' } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => ` Efficiency: ${c.parsed.y}%` } }
+        }
       }
-    };
+    });
+  }
 
-    window.handleHomeClick = () => {
-      if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
-        renderGovernanceView();
-      } else if (state.currentUser) {
-        renderTimesheetGrid();
-      }
-    };
+  window.copyGraphToClipboard = async () => {
+    const chartCanvas = document.getElementById('teamEfficiencyChart');
+    if (!chartCanvas) {
+      showToast('Chart not available.', 'error');
+      return;
+    }
 
-    function setupEventListeners() {
-      const userBtn = document.getElementById('user-menu-btn');
-      const dropdown = document.getElementById('user-menu-dropdown');
-      userBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        dropdown.classList.toggle('hidden');
-      });
-      document.addEventListener('click', () => dropdown.classList.add('hidden'));
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = chartCanvas.width;
+    exportCanvas.height = chartCanvas.height;
+    const ctx = exportCanvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    ctx.drawImage(chartCanvas, 0, 0);
 
-      document.getElementById('btn-logout').addEventListener('click', () => {
-        localStorage.removeItem('ent_logged_empid');
-        state.currentUser = null;
-        openLoginModal();
-        showToast('Logged out successfully.', 'info');
-      });
-
-      // Admin Profile Edit Modal Handler (Admin Role Only)
-      document.getElementById('btn-edit-admin-profile').addEventListener('click', () => {
-        dropdown.classList.add('hidden');
-        if (!state.currentUser || state.currentUser.role !== 'ADMIN') {
-          showToast('Only Admin accounts can edit this profile.', 'error');
+    if (navigator.clipboard && window.ClipboardItem) {
+      try {
+        const blob = await new Promise(resolve => exportCanvas.toBlob(resolve, 'image/png'));
+        if (blob) {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+          showToast('Graph copied to clipboard! Ready to paste.', 'success');
           return;
         }
-        document.getElementById('input-admin-name').value = state.currentUser.name || '';
-        document.getElementById('input-admin-pass').value = state.currentUser.password || '';
-        document.getElementById('input-admin-dept').value = state.currentUser.dept || '';
-        document.getElementById('modal-admin-self-edit').classList.remove('hidden');
-      });
-
-      document.getElementById('form-admin-self-edit').addEventListener('submit', e => {
-        e.preventDefault();
-        if (!state.currentUser || state.currentUser.role !== 'ADMIN') return;
-        
-        const newName = document.getElementById('input-admin-name').value.trim();
-        const newPass = document.getElementById('input-admin-pass').value.trim();
-        const newDept = document.getElementById('input-admin-dept').value.trim();
-
-        const adminIdx = state.users.findIndex(u => u.empId.toUpperCase() === state.currentUser.empId.toUpperCase());
-        if (adminIdx > -1) {
-          state.users[adminIdx].name = newName;
-          state.users[adminIdx].password = newPass;
-          state.users[adminIdx].dept = newDept;
-
-          state.currentUser.name = newName;
-          state.currentUser.password = newPass;
-          state.currentUser.dept = newDept;
-        }
-
-        saveState();
-        document.getElementById('modal-admin-self-edit').classList.add('hidden');
-        document.getElementById('nav-user-name').textContent = newName;
-        showToast('Admin credentials updated successfully.', 'success');
-      });
-
-      document.getElementById('btn-open-calendar-settings').addEventListener('click', () => {
-        document.getElementById('cfg-shift1-hrs').value = state.shiftConfigs['1ST'] || 7.5;
-        document.getElementById('cfg-shift2-hrs').value = state.shiftConfigs['2ND'] || 7.5;
-        document.getElementById('cfg-shift3-hrs').value = state.shiftConfigs['3RD'] || 6.5;
-        document.getElementById('cfg-shiftG-hrs').value = state.shiftConfigs['GENERAL'] || 7.5;
-        document.getElementById('calendar-table-filter').value = state.selectedWeek;
-        document.getElementById('holiday-input-week').value = state.selectedWeek;
-
-        const weekMeta = getWeekDates(state.selectedWeek);
-        document.getElementById('holiday-input-date').value = weekMeta.mondayDate;
-
-        cancelCalendarEdit();
-        renderCalendarDeclarationsTable();
-        document.getElementById('modal-calendar-settings').classList.remove('hidden');
-      });
-
-      document.getElementById('btn-copy-chart').addEventListener('click', window.copyGraphToClipboard);
-
-      document.getElementById('btn-open-export-modal').addEventListener('click', () => {
-        document.getElementById('modal-export').classList.remove('hidden');
-      });
-
-      // ADD EMPLOYEE MODAL TRIGGER
-      document.getElementById('btn-create-user-modal').addEventListener('click', () => {
-        document.getElementById('form-user-original-empid').value = '';
-        document.getElementById('form-user-governance').reset();
-        document.getElementById('user-modal-title-text').textContent = 'Add New Employee';
-        document.getElementById('btn-save-user-text').textContent = 'Create Account';
-        document.getElementById('modal-user-form').classList.remove('hidden');
-      });
-
-      document.getElementById('btn-open-recycle-bin').addEventListener('click', () => {
-        renderRecycleBin();
-        document.getElementById('modal-recycle-bin').classList.remove('hidden');
-      });
-
-      document.getElementById('btn-add-project').addEventListener('click', () => {
-        document.getElementById('input-new-project-code').value = '';
-        document.getElementById('modal-add-project').classList.remove('hidden');
-      });
-
-      document.getElementById('form-add-project').addEventListener('submit', e => {
-        e.preventDefault();
-        const code = document.getElementById('input-new-project-code').value.trim().toUpperCase();
-        if (code && state.currentUser) {
-          const rows = getUserWeekProjects(state.currentUser.empId, state.selectedWeek);
-          rows.push({ code, hours: [0, 0, 0, 0, 0, 0, 0] });
-          saveState();
-          document.getElementById('modal-add-project').classList.add('hidden');
-          renderTimesheetGrid();
-          showToast(`Project ${code} added for Week ${state.selectedWeek}.`, 'success');
-        }
-      });
-
-      document.getElementById('btn-save-draft').addEventListener('click', () => {
-        saveState();
-        showToast('Timesheet draft saved.', 'info');
-      });
-
-      document.getElementById('btn-submit-timesheet').addEventListener('click', () => {
-        try {
-          if (!state.currentUser) {
-            showToast('User session expired. Please sign in.', 'error');
-            return;
-          }
-
-          const user = state.currentUser;
-          const rows = getUserWeekProjects(user.empId, state.selectedWeek);
-          if (!rows || !Array.isArray(rows) || rows.length === 0) {
-            showToast('No project rows to submit.', 'error');
-            return;
-          }
-
-          const dayTotals = [0, 0, 0, 0, 0, 0, 0];
-          rows.forEach(r => {
-            if (r.hours && Array.isArray(r.hours)) {
-              r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0);
-            }
-          });
-
-          const newlyLocked = [];
-          dayTotals.forEach((tot, idx) => {
-            if (tot > 0) newlyLocked.push(idx);
-          });
-
-          if (newlyLocked.length === 0) {
-            showToast('Please log hours on at least one working day before submitting.', 'error');
-            return;
-          }
-
-          if (confirm(`Submit work log for Week ${state.selectedWeek}? Updated days will be locked.`)) {
-            if (!state.lockedDays) state.lockedDays = {};
-            if (typeof state.lockedDays[user.empId] !== 'object' || Array.isArray(state.lockedDays[user.empId])) {
-              state.lockedDays[user.empId] = {};
-            }
-
-            const currentWeekLocked = state.lockedDays[user.empId][state.selectedWeek] || [];
-            state.lockedDays[user.empId][state.selectedWeek] = Array.from(new Set([...currentWeekLocked, ...newlyLocked]));
-
-            saveState();
-            renderTimesheetGrid();
-            showToast(`Work log for Week ${state.selectedWeek} submitted and locked successfully.`, 'success');
-          }
-        } catch (err) {
-          console.error("Submission error:", err);
-          showToast("Failed to lock timesheet. Please try again.", "error");
-        }
-      });
-
-      // USER FORM SUBMISSION
-      document.getElementById('form-user-governance').addEventListener('submit', e => {
-        e.preventDefault();
-        const originalEmpId = document.getElementById('form-user-original-empid').value.trim().toUpperCase();
-        const newEmpId = document.getElementById('input-user-empid').value.trim().toUpperCase();
-        const name = document.getElementById('input-user-fullname').value.trim();
-        const password = document.getElementById('input-user-password').value.trim();
-        const role = document.getElementById('input-user-role').value;
-        const dept = document.getElementById('input-user-dept').value.trim();
-
-        if (originalEmpId) {
-          const idx = state.users.findIndex(u => u.empId.toUpperCase() === originalEmpId);
-          if (idx > -1) {
-            state.users[idx] = { empId: newEmpId, name, password, role, dept };
-            if (originalEmpId !== newEmpId && state.userProjects[originalEmpId]) {
-              state.userProjects[newEmpId] = state.userProjects[originalEmpId];
-              delete state.userProjects[originalEmpId];
-            }
-          }
-          showToast(`Account ${newEmpId} updated successfully.`, 'success');
-        } else {
-          if (state.users.some(u => u.empId.toUpperCase() === newEmpId)) {
-            showToast('An account with this Employee ID already exists!', 'error');
-            return;
-          }
-          state.users.push({ empId: newEmpId, name, password, role, dept });
-          showToast(`User ${newEmpId} created successfully.`, 'success');
-        }
-
-        saveState();
-        document.getElementById('modal-user-form').classList.add('hidden');
-        renderGovernanceView();
-      });
-
-      document.getElementById('form-login').addEventListener('submit', e => {
-        e.preventDefault();
-        const empid = document.getElementById('login-empid').value.trim().toUpperCase();
-        const pass = document.getElementById('login-password').value.trim();
-
-        const found = state.users.find(u => u.empId.toUpperCase() === empid && u.password === pass);
-        if (found) {
-          authenticateUser(found);
-          showToast(`Welcome back, ${found.name}!`, 'success');
-        } else {
-          showToast('Invalid Employee ID or password.', 'error');
-        }
-      });
-
-      document.getElementById('select-shift').addEventListener('change', e => {
-        state.activeShift = e.target.value;
-        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) renderGovernanceView();
-        else renderTimesheetGrid();
-      });
-
-      document.getElementById('select-week').addEventListener('change', e => {
-        state.selectedWeek = e.target.value;
-        showToast(`Switched to Week ${state.selectedWeek}`, 'info');
-        
-        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
-          renderGovernanceView();
-        } else {
-          renderTimesheetGrid();
-        }
-      });
-
-      document.querySelectorAll('.btn-close-modal').forEach(btn => {
-        btn.addEventListener('click', () => btn.closest('.fixed').classList.add('hidden'));
-      });
+      } catch (err) {
+        console.warn('Clipboard write restricted. Displaying preview fallback.', err);
+      }
     }
+
+    const dataUrl = exportCanvas.toDataURL('image/png');
+    openChartCopyModal(dataUrl);
+  };
+
+  function openChartCopyModal(imageDataUrl) {
+    let modal = document.getElementById('modal-chart-copy-preview');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'modal-chart-copy-preview';
+      modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+      modal.innerHTML = `
+        <div class="bg-white rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl text-xs border border-slate-200">
+          <div class="flex items-center justify-between border-b pb-2">
+            <div class="flex items-center space-x-2 text-indigo-900 font-bold">
+              <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i>
+              <span class="text-sm">Copy Chart Image</span>
+            </div>
+            <button onclick="document.getElementById('modal-chart-copy-preview').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+          </div>
+          <p class="text-slate-500 text-[11px]">
+            Right-click the image below and select <strong>"Copy Image"</strong> to paste directly into Email or PowerPoint:
+          </p>
+          <div class="border rounded-xl p-2 bg-slate-50 flex justify-center overflow-hidden">
+            <img id="chart-preview-img" src="" alt="Chart Preview" class="max-h-60 rounded shadow-sm object-contain" />
+          </div>
+          <div class="flex justify-end space-x-2 pt-2">
+            <a id="chart-download-fallback-link" href="" download="Team_Efficiency_Chart.png" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow inline-flex items-center space-x-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Download PNG</span>
+            </a>
+            <button onclick="document.getElementById('modal-chart-copy-preview').classList.add('hidden')" class="px-3.5 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg">
+              Close
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      lucide.createIcons();
+    }
+
+    document.getElementById('chart-preview-img').src = imageDataUrl;
+    document.getElementById('chart-download-fallback-link').href = imageDataUrl;
+    modal.classList.remove('hidden');
+  }
+
+  window.openUserProfileModal = () => {
+    const user = state.currentUser;
+    if (!user) return;
+    document.getElementById('prof-modal-name').textContent = user.name || 'User';
+    document.getElementById('prof-modal-empid').textContent = user.empId;
+    document.getElementById('prof-modal-role').textContent = user.role;
+    document.getElementById('prof-modal-dept').textContent = user.dept || 'Operations';
+    document.getElementById('prof-modal-shift').textContent = SHIFTS[state.activeShift] ? SHIFTS[state.activeShift].label : 'General Shift';
+    document.getElementById('modal-user-profile').classList.remove('hidden');
+  };
+
+  function renderCalendarDeclarationsTable() {
+    const tbody = document.getElementById('holidays-tbody');
+    if (!tbody) return;
+
+    const filterSelect = document.getElementById('calendar-table-filter');
+    const filterVal = filterSelect ? filterSelect.value : 'ALL';
+
+    const filtered = state.calendarHolidays.filter(item => {
+      return filterVal === 'ALL' || String(item.week) === String(filterVal);
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">No calendar overrides found for this filter.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(item => {
+      let impactBadge = '';
+      if (item.type === 'holiday' || item.type === 'sunday') {
+        impactBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Excluded (0 hrs planned)</span>`;
+      } else {
+        impactBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Added to Planned Target</span>`;
+      }
+
+      return `
+        <tr class="border-b hover:bg-slate-50">
+          <td class="p-2.5 font-bold text-slate-800">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 mr-1.5">Week ${item.week}</span>
+            <span>${item.dayName || item.date}</span>
+          </td>
+          <td class="p-2.5 uppercase font-bold text-xs text-indigo-900">${item.type}</td>
+          <td class="p-2.5 font-medium text-slate-700">${item.label}</td>
+          <td class="p-2.5 text-center">${impactBadge}</td>
+          <td class="p-2.5 text-right space-x-1">
+            <button onclick="window.editCalendarHoliday('${item.id}')" class="text-indigo-600 hover:text-indigo-900 font-bold px-2 py-1 bg-indigo-50 rounded">Edit</button>
+            <button onclick="window.removeCalendarHoliday('${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded">Delete</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  window.editCalendarHoliday = id => {
+    const item = state.calendarHolidays.find(x => String(x.id) === String(id));
+    if (!item) return;
+
+    document.getElementById('calendar-edit-id').value = item.id;
+    document.getElementById('holiday-input-week').value = item.week;
+    document.getElementById('holiday-input-date').value = item.date;
+    document.getElementById('holiday-input-type').value = item.type;
+    document.getElementById('holiday-input-label').value = item.label;
+
+    document.getElementById('calendar-form-heading').textContent = `Edit Override (${item.dayName || item.date}):`;
+    document.getElementById('btn-save-cal-entry').textContent = 'Update Declaration';
+    document.getElementById('btn-cancel-cal-edit').classList.remove('hidden');
+  };
+
+  window.cancelCalendarEdit = () => {
+    document.getElementById('calendar-edit-id').value = '';
+    document.getElementById('calendar-form-heading').textContent = 'Declare Date / Holiday Override:';
+    document.getElementById('btn-save-cal-entry').textContent = 'Save Calendar Entry';
+    document.getElementById('btn-cancel-cal-edit').classList.add('hidden');
+    document.getElementById('holiday-input-label').value = 'Holiday';
+  };
+
+  window.saveCustomHolidayEntry = () => {
+    const editId = document.getElementById('calendar-edit-id').value;
+    const weekVal = document.getElementById('holiday-input-week').value;
+    const dateStr = document.getElementById('holiday-input-date').value;
+    const typeStr = document.getElementById('holiday-input-type').value;
+    const labelStr = document.getElementById('holiday-input-label').value.trim();
+
+    if (!dateStr || !labelStr) {
+      showToast('Please specify a valid date and description.', 'error');
+      return;
+    }
+
+    const parts = dateStr.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    const dateObj = new Date(year, month, day);
+
+    let dayIndex = dateObj.getDay() - 1;
+    if (dayIndex < 0) dayIndex = 6;
+
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formattedDayName = `${dayNames[dayIndex]}, ${dateObj.getDate()} ${monthNames[dateObj.getMonth()]}`;
+
+    const payload = {
+      id: editId || 'cal_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      week: String(weekVal),
+      date: dateStr,
+      dayCol: dayIndex,
+      dayName: formattedDayName,
+      type: typeStr,
+      label: labelStr
+    };
+
+    if (editId) {
+      const idx = state.calendarHolidays.findIndex(x => String(x.id) === String(editId));
+      if (idx > -1) state.calendarHolidays[idx] = payload;
+      showToast(`Updated week ${weekVal} override: ${formattedDayName}.`, 'success');
+      cancelCalendarEdit();
+    } else {
+      const existingIdx = state.calendarHolidays.findIndex(x => String(x.week) === String(weekVal) && x.dayCol === dayIndex);
+      if (existingIdx > -1) {
+        state.calendarHolidays[existingIdx] = payload;
+        showToast(`Updated existing override for ${formattedDayName} in Week ${weekVal}.`, 'success');
+      } else {
+        state.calendarHolidays.push(payload);
+        showToast(`Added week ${weekVal} override: ${formattedDayName}.`, 'success');
+      }
+    }
+
+    const filterSelect = document.getElementById('calendar-table-filter');
+    if (filterSelect && filterSelect.value !== 'ALL' && filterSelect.value !== String(weekVal)) {
+      filterSelect.value = String(weekVal);
+    }
+
+    saveState();
+    renderCalendarDeclarationsTable();
+    renderGovernanceView();
+    renderTimesheetGrid();
+  };
+
+  window.removeCalendarHoliday = id => {
+    const idx = state.calendarHolidays.findIndex(x => String(x.id) === String(id));
+    if (idx > -1) {
+      const removed = state.calendarHolidays.splice(idx, 1)[0];
+      saveState();
+      renderCalendarDeclarationsTable();
+      renderGovernanceView();
+      renderTimesheetGrid();
+      showToast(`Deleted override for ${removed.dayName || removed.date} (Week ${removed.week}).`, 'info');
+    }
+  };
+
+  window.saveShiftConfigs = () => {
+    const s1 = parseFloat(document.getElementById('cfg-shift1-hrs').value) || 7.5;
+    const s2 = parseFloat(document.getElementById('cfg-shift2-hrs').value) || 7.5;
+    const s3 = parseFloat(document.getElementById('cfg-shift3-hrs').value) || 6.5;
+    const sG = parseFloat(document.getElementById('cfg-shiftG-hrs').value) || 7.5;
+
+    state.shiftConfigs = { '1ST': s1, '2ND': s2, '3RD': s3, 'GENERAL': sG };
+    saveState();
+    renderGovernanceView();
+    renderTimesheetGrid();
+    showToast(`Updated shift minimums: 1st=${s1}h, 2nd=${s2}h, 3rd=${s3}h, General=${sG}h`, 'success');
+  };
+
+  window.unlockAllDaysForEmployee = empId => {
+    if (!state.lockedDays[empId]) state.lockedDays[empId] = {};
+    state.lockedDays[empId][state.selectedWeek] = [];
+    saveState();
+    renderGovernanceView();
+    showToast(`Unlocked days for ${empId} in Week ${state.selectedWeek}.`, 'success');
+  };
+
+  window.openEditUserModal = empId => {
+    const emp = state.users.find(u => u.empId.toUpperCase() === empId.toUpperCase());
+    if (!emp) return;
+
+    document.getElementById('form-user-original-empid').value = emp.empId;
+    document.getElementById('input-user-empid').value = emp.empId;
+    document.getElementById('input-user-fullname').value = emp.name;
+    document.getElementById('input-user-password').value = emp.password;
+    document.getElementById('input-user-role').value = emp.role;
+    document.getElementById('input-user-dept').value = emp.dept || 'Operations';
+
+    document.getElementById('user-modal-title-text').textContent = `Edit Details: ${emp.name}`;
+    document.getElementById('btn-save-user-text').textContent = 'Save Changes';
+    document.getElementById('modal-user-form').classList.remove('hidden');
+  };
+
+  window.promptDeleteUser = empId => {
+    const target = state.users.find(u => u.empId === empId);
+    if (!target) return;
+    if (state.currentUser && state.currentUser.empId === empId) {
+      showToast('Cannot delete active logged-in session!', 'error');
+      return;
+    }
+    const reason = prompt(`Provide mandatory deletion reason for ${target.name}:`);
+    if (reason && reason.trim()) {
+      const idx = state.users.findIndex(u => u.empId === empId);
+      if (idx > -1) {
+        const removed = state.users.splice(idx, 1)[0];
+        removed.reason = reason.trim();
+        state.recycleBin.push(removed);
+        saveState();
+        renderGovernanceView();
+        showToast(`Archived ${empId} to Recycle Bin.`, 'info');
+      }
+    }
+  };
+
+  function renderRecycleBin() {
+    const tbody = document.getElementById('recycle-bin-tbody');
+    if (!tbody) return;
+    if (state.recycleBin.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Recycle Bin is empty.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = state.recycleBin.map((item, idx) => `
+      <tr class="border-b border-slate-100">
+        <td class="px-3 py-2 font-mono font-bold">${item.empId}</td>
+        <td class="px-3 py-2">${item.name}</td>
+        <td class="px-3 py-2 text-rose-700 italic">${item.reason}</td>
+        <td class="px-3 py-2 text-right space-x-2">
+          <button onclick="window.restoreUser(${idx})" class="text-indigo-600 hover:underline">Restore</button>
+          <button onclick="window.purgeUserPermanently(${idx})" class="text-rose-600 hover:underline">Purge</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  window.restoreUser = idx => {
+    const restored = state.recycleBin.splice(idx, 1)[0];
+    delete restored.reason;
+    state.users.push(restored);
+    saveState();
+    renderGovernanceView();
+    showToast(`Restored user: ${restored.empId}`, 'success');
+  };
+
+  window.purgeUserPermanently = idx => {
+    if (confirm('Permanently purge this record?')) {
+      state.recycleBin.splice(idx, 1);
+      saveState();
+      renderRecycleBin();
+      showToast('Record purged permanently.', 'info');
+    }
+  };
+
+  window.handleHomeClick = () => {
+    if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+      renderGovernanceView();
+    } else if (state.currentUser) {
+      renderTimesheetGrid();
+    }
+  };
+
+  function executeCsvExport() {
+    const scope = document.getElementById('export-scope-type').value;
+    const weekVal = document.getElementById('export-week-val').value.replace('Week_', '');
+    const fileName = `TVS_Workforce_Efficiency_Week_${weekVal}.csv`;
+    const targetHours = state.shiftConfigs[state.activeShift] || SHIFTS[state.activeShift].targetWeekday;
+
+    let csv = '\uFEFF';
+    csv += 'Emp ID,Full Name,Role,Department,Week,Planned Target (Hrs),Actual Logged (Hrs),Efficiency (%)\n';
+
+    state.users.filter(u => !u.isProtected && u.role !== 'ADMIN' && u.role !== 'MANAGER').forEach(emp => {
+      const rows = getUserWeekProjects(emp.empId, weekVal);
+      const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+      rows.forEach(r => r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0));
+
+      const metrics = calculateCalendarEfficiency(dayTotals, targetHours, weekVal);
+
+      csv += `"${emp.empId}","${emp.name}","${emp.role}","${emp.dept || 'Operations'}","Week ${weekVal}",${metrics.plannedTarget.toFixed(1)},${metrics.actualLogged.toFixed(1)},${metrics.efficiency}%\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    document.getElementById('modal-export').classList.add('hidden');
+    showToast(`Exported ${fileName}`, 'success');
+  }
+
+  function setupEventListeners() {
+    const userBtn = document.getElementById('user-menu-btn');
+    const dropdown = document.getElementById('user-menu-dropdown');
+    userBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => dropdown.classList.add('hidden'));
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem('ent_logged_empid');
+      state.currentUser = null;
+      openLoginModal();
+      showToast('Logged out successfully.', 'info');
+    });
+
+    document.getElementById('btn-edit-admin-profile').addEventListener('click', () => {
+      dropdown.classList.add('hidden');
+      if (!state.currentUser || state.currentUser.role !== 'ADMIN') {
+        showToast('Only Admin accounts can edit this profile.', 'error');
+        return;
+      }
+      document.getElementById('input-admin-name').value = state.currentUser.name || '';
+      document.getElementById('input-admin-pass').value = state.currentUser.password || '';
+      document.getElementById('input-admin-dept').value = state.currentUser.dept || '';
+      document.getElementById('modal-admin-self-edit').classList.remove('hidden');
+    });
+
+    document.getElementById('form-admin-self-edit').addEventListener('submit', e => {
+      e.preventDefault();
+      if (!state.currentUser || state.currentUser.role !== 'ADMIN') return;
+      
+      const newName = document.getElementById('input-admin-name').value.trim();
+      const newPass = document.getElementById('input-admin-pass').value.trim();
+      const newDept = document.getElementById('input-admin-dept').value.trim();
+
+      const adminIdx = state.users.findIndex(u => u.empId.toUpperCase() === state.currentUser.empId.toUpperCase());
+      if (adminIdx > -1) {
+        state.users[adminIdx].name = newName;
+        state.users[adminIdx].password = newPass;
+        state.users[adminIdx].dept = newDept;
+
+        state.currentUser.name = newName;
+        state.currentUser.password = newPass;
+        state.currentUser.dept = newDept;
+      }
+
+      saveState();
+      document.getElementById('modal-admin-self-edit').classList.add('hidden');
+      document.getElementById('nav-user-name').textContent = newName;
+      showToast('Admin credentials updated successfully.', 'success');
+    });
+
+    document.getElementById('btn-open-calendar-settings').addEventListener('click', () => {
+      document.getElementById('cfg-shift1-hrs').value = state.shiftConfigs['1ST'] || 7.5;
+      document.getElementById('cfg-shift2-hrs').value = state.shiftConfigs['2ND'] || 7.5;
+      document.getElementById('cfg-shift3-hrs').value = state.shiftConfigs['3RD'] || 6.5;
+      document.getElementById('cfg-shiftG-hrs').value = state.shiftConfigs['GENERAL'] || 7.5;
+      document.getElementById('calendar-table-filter').value = state.selectedWeek;
+      document.getElementById('holiday-input-week').value = state.selectedWeek;
+
+      const weekMeta = getWeekDates(state.selectedWeek);
+      document.getElementById('holiday-input-date').value = weekMeta.mondayDate;
+
+      cancelCalendarEdit();
+      renderCalendarDeclarationsTable();
+      document.getElementById('modal-calendar-settings').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-copy-chart').addEventListener('click', window.copyGraphToClipboard);
+
+    document.getElementById('btn-open-export-modal').addEventListener('click', () => {
+      document.getElementById('modal-export').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-confirm-export').addEventListener('click', executeCsvExport);
+
+    document.getElementById('btn-create-user-modal').addEventListener('click', () => {
+      document.getElementById('form-user-original-empid').value = '';
+      document.getElementById('form-user-governance').reset();
+      document.getElementById('user-modal-title-text').textContent = 'Add New Employee';
+      document.getElementById('btn-save-user-text').textContent = 'Create Account';
+      document.getElementById('modal-user-form').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-open-recycle-bin').addEventListener('click', () => {
+      renderRecycleBin();
+      document.getElementById('modal-recycle-bin').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-add-project').addEventListener('click', () => {
+      document.getElementById('input-new-project-code').value = '';
+      document.getElementById('modal-add-project').classList.remove('hidden');
+    });
+
+    document.getElementById('form-add-project').addEventListener('submit', e => {
+      e.preventDefault();
+      const code = document.getElementById('input-new-project-code').value.trim().toUpperCase();
+      if (code && state.currentUser) {
+        const rows = getUserWeekProjects(state.currentUser.empId, state.selectedWeek);
+        rows.push({ code, hours: [0, 0, 0, 0, 0, 0, 0] });
+        saveState();
+        document.getElementById('modal-add-project').classList.add('hidden');
+        renderTimesheetGrid();
+        showToast(`Project ${code} added for Week ${state.selectedWeek}.`, 'success');
+      }
+    });
+
+    document.getElementById('btn-save-draft').addEventListener('click', () => {
+      saveState();
+      showToast('Timesheet draft saved.', 'info');
+    });
+
+    document.getElementById('btn-submit-timesheet').addEventListener('click', () => {
+      try {
+        if (!state.currentUser) {
+          showToast('User session expired. Please sign in.', 'error');
+          return;
+        }
+
+        const user = state.currentUser;
+        const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+        if (!rows || !Array.isArray(rows) || rows.length === 0) {
+          showToast('No project rows to submit.', 'error');
+          return;
+        }
+
+        const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+        rows.forEach(r => {
+          if (r.hours && Array.isArray(r.hours)) {
+            r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0);
+          }
+        });
+
+        const newlyLocked = [];
+        dayTotals.forEach((tot, idx) => {
+          if (tot > 0) newlyLocked.push(idx);
+        });
+
+        if (newlyLocked.length === 0) {
+          showToast('Please log hours on at least one working day before submitting.', 'error');
+          return;
+        }
+
+        if (confirm(`Submit work log for Week ${state.selectedWeek}? Updated days will be locked.`)) {
+          if (!state.lockedDays) state.lockedDays = {};
+          if (typeof state.lockedDays[user.empId] !== 'object' || Array.isArray(state.lockedDays[user.empId])) {
+            state.lockedDays[user.empId] = {};
+          }
+
+          const currentWeekLocked = state.lockedDays[user.empId][state.selectedWeek] || [];
+          state.lockedDays[user.empId][state.selectedWeek] = Array.from(new Set([...currentWeekLocked, ...newlyLocked]));
+
+          saveState();
+          renderTimesheetGrid();
+          showToast(`Work log for Week ${state.selectedWeek} submitted and locked successfully.`, 'success');
+        }
+      } catch (err) {
+        console.error("Submission error:", err);
+        showToast("Failed to lock timesheet. Please try again.", "error");
+      }
+    });
+
+    document.getElementById('form-user-governance').addEventListener('submit', e => {
+      e.preventDefault();
+      const originalEmpId = document.getElementById('form-user-original-empid').value.trim().toUpperCase();
+      const newEmpId = document.getElementById('input-user-empid').value.trim().toUpperCase();
+      const name = document.getElementById('input-user-fullname').value.trim();
+      const password = document.getElementById('input-user-password').value.trim();
+      const role = document.getElementById('input-user-role').value;
+      const dept = document.getElementById('input-user-dept').value.trim();
+
+      if (originalEmpId) {
+        const idx = state.users.findIndex(u => u.empId.toUpperCase() === originalEmpId);
+        if (idx > -1) {
+          state.users[idx] = { empId: newEmpId, name, password, role, dept };
+          if (originalEmpId !== newEmpId && state.userProjects[originalEmpId]) {
+            state.userProjects[newEmpId] = state.userProjects[originalEmpId];
+            delete state.userProjects[originalEmpId];
+          }
+        }
+        showToast(`Account ${newEmpId} updated successfully.`, 'success');
+      } else {
+        if (state.users.some(u => u.empId.toUpperCase() === newEmpId)) {
+          showToast('An account with this Employee ID already exists!', 'error');
+          return;
+        }
+        state.users.push({ empId: newEmpId, name, password, role, dept });
+        showToast(`User ${newEmpId} created successfully.`, 'success');
+      }
+
+      saveState();
+      document.getElementById('modal-user-form').classList.add('hidden');
+      renderGovernanceView();
+    });
+
+    document.getElementById('form-login').addEventListener('submit', e => {
+      e.preventDefault();
+      const empid = document.getElementById('login-empid').value.trim().toUpperCase();
+      const pass = document.getElementById('login-password').value.trim();
+
+      const found = state.users.find(u => u.empId.toUpperCase() === empid && u.password === pass);
+      if (found) {
+        authenticateUser(found);
+        showToast(`Welcome back, ${found.name}!`, 'success');
+      } else {
+        showToast('Invalid Employee ID or password.', 'error');
+      }
+    });
+
+    document.getElementById('select-shift').addEventListener('change', e => {
+      state.activeShift = e.target.value;
+      if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) renderGovernanceView();
+      else renderTimesheetGrid();
+    });
+
+    document.getElementById('select-week').addEventListener('change', e => {
+      state.selectedWeek = e.target.value;
+      showToast(`Switched to Week ${state.selectedWeek}`, 'info');
+      
+      if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+        renderGovernanceView();
+      } else {
+        renderTimesheetGrid();
+      }
+    });
+
+    document.querySelectorAll('.btn-close-modal').forEach(btn => {
+      btn.addEventListener('click', () => btn.closest('.fixed').classList.add('hidden'));
+    });
+  }
   </script>
 </body>
 </html>
