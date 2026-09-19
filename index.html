@@ -6,7 +6,6 @@
   <title>TVS Workforce & Governance Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Chart.js and DataLabels Plugin -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
   
@@ -20,7 +19,6 @@
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     .col-updated { background-color: #dcfce7 !important; border-color: #86efac !important; color: #166534 !important; }
     .col-not-updated { background-color: #fee2e2 !important; border-color: #fca5a5 !important; color: #991b1b !important; }
-    .col-upcoming { background-color: #fef9c3 !important; border-color: #fde047 !important; color: #854d0e !important; }
     .col-holiday { background-color: #ffedd5 !important; border-color: #fdba74 !important; color: #9a3412 !important; }
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -51,31 +49,23 @@
 
         <div id="role-badge-container" class="hidden sm:flex items-center"></div>
 
-        <div class="relative flex items-center bg-slate-800 rounded-lg border border-slate-700">
-          <button type="button" onclick="window.openUserProfileModal()" class="flex items-center space-x-2 px-3 py-1.5 text-slate-200 hover:text-white hover:bg-slate-700/50 rounded-l-lg transition" title="View Profile Details">
+        <div class="relative">
+          <button id="user-menu-btn" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3.5 py-1.5 rounded-lg border border-slate-700 transition">
             <i data-lucide="user-circle-2" class="w-5 h-5 text-indigo-400"></i>
             <span id="nav-user-name" class="text-xs font-semibold uppercase">Loading...</span>
-          </button>
-          
-          <button type="button" id="user-dropdown-arrow-btn" class="px-2 py-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-r-lg border-l border-slate-700 transition" title="Open menu">
-            <i data-lucide="chevron-down" class="w-3.5 h-3.5 pointer-events-none"></i>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
           </button>
 
           <div id="user-menu-dropdown" class="hidden absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-xl border border-slate-200 py-1 text-slate-800 z-50">
-            <div class="px-4 py-2.5 border-b border-slate-100 cursor-pointer hover:bg-slate-50 transition" onclick="window.openUserProfileModal()">
-              <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Signed in as</p>
-              <p id="dropdown-user-id" class="text-sm font-bold text-slate-900 font-mono"></p>
-              <span class="text-[10px] text-indigo-600 font-semibold mt-0.5 block">View Account Summary &rarr;</span>
-            </div>
-            <button id="btn-view-profile-opt" onclick="window.openUserProfileModal()" class="w-full text-left px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center space-x-2">
-              <i data-lucide="id-card" class="w-4 h-4 text-slate-500"></i>
+            <button onclick="window.openUserProfileModal(); document.getElementById('user-menu-dropdown').classList.add('hidden');" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center space-x-2 border-b border-slate-100">
+              <i data-lucide="id-card" class="w-4 h-4 text-indigo-600"></i>
               <span>Account Summary</span>
             </button>
             <button id="btn-edit-admin-profile" class="hidden w-full text-left px-4 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-50 flex items-center space-x-2 border-t border-slate-100">
               <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
               <span>Edit Admin Profile</span>
             </button>
-            <button id="btn-logout" class="w-full text-left px-4 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 flex items-center space-x-2 border-t border-slate-100">
+            <button id="btn-logout" class="w-full text-left px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center space-x-2">
               <i data-lucide="log-out" class="w-4 h-4"></i>
               <span>Log Out</span>
             </button>
@@ -115,12 +105,15 @@
           <div>
             <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Select Week</label>
             <select id="select-week" class="text-xs bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-              <option value="23">Week 23 (Jun 2026)</option>
-              <option value="24">Week 24 (Jun 2026)</option>
-              <option value="25" selected>Week 25 (Sep 2026)</option>
-              <option value="26">Week 26 (Sep 2026)</option>
-              <option value="27">Week 27 (Oct 2026)</option>
+              <option value="25" selected>Week 25 (14-09-2026 to 20-09-2026)</option>
             </select>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Current Month</label>
+            <div id="display-month" class="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg">
+              September-2026
+            </div>
           </div>
         </div>
 
@@ -148,7 +141,7 @@
       <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <div>
           <h2 class="text-base font-bold text-slate-800">Executive Governance &amp; Workforce Matrix</h2>
-          <p class="text-xs text-slate-500">Calendar overrides by week directly govern planned hours.</p>
+          <p class="text-xs text-slate-500">Current Month: September 2026 | Week 25 (14-09-2026 to 20-09-2026)</p>
         </div>
         
         <div class="flex items-center space-x-3">
@@ -156,13 +149,13 @@
             <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
             <span>Work Days &amp; Company Holiday Calendar</span>
           </button>
+          <button id="btn-create-user-modal" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+            <i data-lucide="user-plus" class="w-4 h-4"></i>
+            <span>Add Employee</span>
+          </button>
           <button id="btn-open-export-modal" class="text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
             <span>Export Data</span>
-          </button>
-          <button id="btn-create-user-modal" class="text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
-            <i data-lucide="user-plus" class="w-4 h-4"></i>
-            <span>Add Employee</span>
           </button>
           <button id="btn-open-recycle-bin" class="hidden text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-lg flex items-center space-x-1.5 transition">
             <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
@@ -171,7 +164,7 @@
         </div>
       </div>
 
-      <!-- Presentation Bar Chart with Percentage DataLabels & Copy Option -->
+      <!-- Presentation Bar Chart with Percentage DataLabels -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
         <div class="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
@@ -196,27 +189,39 @@
         </div>
       </div>
 
-      <!-- Efficiency Table -->
+      <!-- Efficiency Table with Color Legend & Coded Day Cells -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 id="table-week-heading" class="text-sm font-bold text-slate-800">Team Work Efficiency Matrix (Week 25)</h3>
-          <span class="text-xs font-medium text-slate-500">Week-Specific Calendar Working Days</span>
+        <div class="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 id="table-week-heading" class="text-sm font-bold text-slate-800">Team Work Efficiency Matrix (Week 25: 14-09-2026 to 20-09-2026)</h3>
+            <p class="text-[11px] text-indigo-600 font-semibold mt-0.5">💡 Click any employee's name to inspect tasks. Individual daily cells show color-coded status.</p>
+          </div>
+          <!-- Color Legend for Matrix Table -->
+          <div class="flex flex-wrap items-center gap-2 text-[10px] font-medium text-slate-600 bg-slate-50 px-3 py-1 rounded-lg border">
+            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded col-updated border"></span><span>Updated</span></span>
+            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded col-not-updated border"></span><span>Not Updated (0h)</span></span>
+            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded col-holiday border"></span><span>Holiday/Off</span></span>
+          </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-700">
             <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase font-semibold">
               <tr>
-                <th class="px-4 py-3">Emp ID</th>
-                <th class="px-4 py-3">Full Name</th>
-                <th class="px-4 py-3">Role</th>
-                <th class="px-4 py-3 text-center">Planned Target</th>
-                <th class="px-4 py-3 text-center">Actual Logged</th>
-                <th class="px-4 py-3 text-center">Efficiency (%)</th>
-                <th class="px-4 py-3 text-center">Lock Status</th>
-                <th class="px-4 py-3 text-right">Actions</th>
+                <th class="px-2 py-3">Emp ID</th>
+                <th class="px-3 py-3">Full Name</th>
+                <th class="px-2 py-3 text-center">Mon (14)</th>
+                <th class="px-2 py-3 text-center">Tue (15)</th>
+                <th class="px-2 py-3 text-center">Wed (16)</th>
+                <th class="px-2 py-3 text-center">Thu (17)</th>
+                <th class="px-2 py-3 text-center">Fri (18)</th>
+                <th class="px-2 py-3 text-center">Sat (19)</th>
+                <th class="px-2 py-3 text-center">Sun (20)</th>
+                <th class="px-3 py-3 text-center">Total</th>
+                <th class="px-3 py-3 text-center">Efficiency</th>
+                <th class="px-3 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody id="efficiency-matrix-tbody" class="divide-y divide-slate-100"></tbody>
+            <tbody id="efficiency-matrix-tbody" class="divide-y divide-slate-100 font-mono"></tbody>
           </table>
         </div>
       </div>
@@ -264,8 +269,7 @@
 
         <div class="flex flex-wrap items-center gap-3 text-[11px] font-medium text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
           <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-updated border"></span><span>Updated Day</span></span>
-          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-not-updated border"></span><span>Not Updated</span></span>
-          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-upcoming border"></span><span>Upcoming</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-not-updated border"></span><span>Not Updated (0h)</span></span>
           <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-holiday border"></span><span>Holiday / Sunday Off</span></span>
         </div>
       </div>
@@ -278,13 +282,13 @@
                 <th class="py-3 px-3 w-12 text-center border-r border-slate-800">S.No</th>
                 <th class="py-3 px-3 w-36 border-r border-slate-800">Project Code</th>
                 <th class="py-3 px-3 w-28 border-r border-slate-800">Month</th>
-                <th id="th-day-0" class="py-3 px-2 text-center border-r border-slate-800">Mon</th>
-                <th id="th-day-1" class="py-3 px-2 text-center border-r border-slate-800">Tue</th>
-                <th id="th-day-2" class="py-3 px-2 text-center border-r border-slate-800">Wed</th>
-                <th id="th-day-3" class="py-3 px-2 text-center border-r border-slate-800">Thu</th>
-                <th id="th-day-4" class="py-3 px-2 text-center border-r border-slate-800">Fri</th>
-                <th id="th-day-5" class="py-3 px-2 text-center border-r border-slate-800">Sat</th>
-                <th id="th-day-6" class="py-3 px-2 text-center border-r border-slate-800">Sun</th>
+                <th id="th-day-0" class="py-3 px-2 text-center border-r border-slate-800">Mon, 14 Sep</th>
+                <th id="th-day-1" class="py-3 px-2 text-center border-r border-slate-800">Tue, 15 Sep</th>
+                <th id="th-day-2" class="py-3 px-2 text-center border-r border-slate-800">Wed, 16 Sep</th>
+                <th id="th-day-3" class="py-3 px-2 text-center border-r border-slate-800">Thu, 17 Sep</th>
+                <th id="th-day-4" class="py-3 px-2 text-center border-r border-slate-800">Fri, 18 Sep</th>
+                <th id="th-day-5" class="py-3 px-2 text-center border-r border-slate-800">Sat, 19 Sep</th>
+                <th id="th-day-6" class="py-3 px-2 text-center border-r border-slate-800">Sun, 20 Sep</th>
                 <th class="py-3 px-3 w-16 text-center border-r border-slate-800">Total</th>
                 <th class="py-3 px-3 w-20 text-center">Action</th>
               </tr>
@@ -373,6 +377,45 @@
           <button type="submit" id="btn-save-user-text" class="font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition">Create Account</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- INSPECT EMPLOYEE TASKS MODAL -->
+  <div id="modal-inspect-employee" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b pb-3">
+        <div class="flex items-center space-x-2 text-blue-900">
+          <i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-600"></i>
+          <div>
+            <h3 id="inspect-modal-title" class="font-bold text-base text-slate-900">Employee Timesheet Details</h3>
+            <p id="inspect-modal-subtitle" class="text-xs text-slate-500">Viewing logged projects and hours for Week 25 (14-09-2026 to 20-09-2026)</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+
+      <div class="overflow-x-auto max-h-72 overflow-y-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-100 font-bold text-slate-700 sticky top-0">
+            <tr>
+              <th class="p-2.5">Project Code</th>
+              <th class="p-2.5 text-center">Mon</th>
+              <th class="p-2.5 text-center">Tue</th>
+              <th class="p-2.5 text-center">Wed</th>
+              <th class="p-2.5 text-center">Thu</th>
+              <th class="p-2.5 text-center">Fri</th>
+              <th class="p-2.5 text-center">Sat</th>
+              <th class="p-2.5 text-center">Sun</th>
+              <th class="p-2.5 text-center">Total</th>
+            </tr>
+          </thead>
+          <tbody id="inspect-tasks-tbody" class="divide-y divide-slate-100 font-mono"></tbody>
+        </table>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button type="button" class="btn-close-modal px-4 py-1.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700">Close</button>
+      </div>
     </div>
   </div>
 
@@ -481,11 +524,8 @@
           <div>
             <label class="block font-bold text-slate-700 mb-1">Week:</label>
             <select id="holiday-input-week" class="w-full border p-2 rounded bg-white font-semibold">
-              <option value="23">Week 23</option>
-              <option value="24">Week 24</option>
-              <option value="25" selected>Week 25</option>
+              <option value="25" selected>Week 25 (14-09-2026 to 20-09-2026)</option>
               <option value="26">Week 26</option>
-              <option value="27">Week 27</option>
             </select>
           </div>
           <div>
@@ -511,19 +551,16 @@
         </div>
       </div>
 
-      <!-- Overrides Listing -->
+      <!-- Overrides Listing with Clear Option -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
           <span class="font-bold text-slate-700">Configured Calendar Overrides:</span>
-          <div class="flex items-center space-x-1.5">
-            <span class="text-slate-500 font-semibold">Filter:</span>
+          <div class="flex items-center space-x-2">
+            <button onclick="clearAllCalendarOverrides()" class="text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-2.5 py-1 rounded transition">Clear All</button>
             <select id="calendar-table-filter" onchange="renderCalendarDeclarationsTable()" class="border border-slate-300 rounded px-2 py-0.5 bg-slate-50 font-semibold">
               <option value="ALL">All Weeks</option>
-              <option value="23">Week 23</option>
-              <option value="24">Week 24</option>
               <option value="25" selected>Week 25 (Active)</option>
               <option value="26">Week 26</option>
-              <option value="27">Week 27</option>
             </select>
           </div>
         </div>
@@ -545,9 +582,7 @@
       </div>
 
       <div class="flex justify-end pt-2 border-t">
-        <button type="button" class="btn-close-modal px-4 py-1.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition">
-          Done
-        </button>
+        <button type="button" class="btn-close-modal px-4 py-1.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700 transition">Done</button>
       </div>
 
     </div>
@@ -571,7 +606,7 @@
           <label class="block font-bold text-slate-700 uppercase mb-1">Password</label>
           <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
-        <div id="login-error-msg" class="hidden text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg">Invalid Emp ID or password.</div>
+        <div id="login-error-msg" class="hidden text-rose-600 bg-rose-50 border border-rose-200 p-2.5 rounded-lg">Invalid Employee ID or password. Please check your credentials and try again.</div>
         <button type="submit" class="w-full font-bold bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg shadow transition">Sign In</button>
       </form>
     </div>
@@ -579,7 +614,7 @@
 
   <!-- ADMIN RECYCLE BIN MODAL -->
   <div id="modal-recycle-bin" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl p-5 space-y-4 text-xs">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-5 space-y-4 text-xs">
       <div class="flex items-center justify-between border-b pb-3">
         <h4 class="text-sm font-bold text-slate-800 flex items-center space-x-2">
           <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
@@ -625,7 +660,7 @@
 
   <!-- EXPORT MODAL -->
   <div id="modal-export" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs">
       <div class="flex items-center justify-between border-b pb-3">
         <h4 class="text-sm font-bold text-slate-800">Export Workforce Data</h4>
         <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -641,11 +676,8 @@
         <div id="export-week-selector-container">
           <label class="block font-semibold text-slate-600 mb-1">Select Week</label>
           <select id="export-week-val" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium">
-            <option value="Week_23">Week 23</option>
-            <option value="Week_24">Week 24</option>
-            <option value="Week_25">Week 25</option>
+            <option value="Week_25">Week 25 (14-09-2026 to 20-09-2026)</option>
             <option value="Week_26">Week 26</option>
-            <option value="Week_27">Week 27</option>
           </select>
         </div>
       </div>
@@ -664,7 +696,6 @@
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           <span class="text-[11px]">System Online</span>
         </span>
-        <span class="text-[11px] font-mono text-slate-400">v8.1.0-enterprise</span>
       </div>
     </div>
   </footer>
@@ -704,13 +735,12 @@
     const DEFAULT_PROJECTS = {
       'EMP-8021': {
         '25': [
-          { code: 'N603-V2', hours: [7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 0] },
-          { code: 'U769M', hours: [0, 0, 0, 0, 0, 0, 0] }
+          { code: 'N603-V2', hours: [0, 0, 0, 0, 0, 0, 0] }
         ]
       },
       'EMP-8045': {
         '25': [
-          { code: 'EV-BAT-CELL', hours: [7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 0] }
+          { code: 'EV-BAT-CELL', hours: [0, 0, 0, 0, 0, 0, 0] }
         ]
       }
     };
@@ -728,12 +758,12 @@
 
     let state = {
       currentUser: null,
-      users: JSON.parse(localStorage.getItem('ent_users_v42')) || DEFAULT_USERS,
-      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v42')) || [],
-      userProjects: JSON.parse(localStorage.getItem('ent_projects_v42')) || DEFAULT_PROJECTS,
-      lockedDays: JSON.parse(localStorage.getItem('ent_locked_days_v42')) || {},
-      calendarHolidays: JSON.parse(localStorage.getItem('ent_calendar_v42')) || DEFAULT_CALENDAR_HOLIDAYS,
-      shiftConfigs: JSON.parse(localStorage.getItem('ent_shifts_v42')) || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 },
+      users: JSON.parse(localStorage.getItem('ent_users_v58')) || DEFAULT_USERS,
+      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v58')) || [],
+      userProjects: JSON.parse(localStorage.getItem('ent_projects_v58')) || DEFAULT_PROJECTS,
+      lockedDays: JSON.parse(localStorage.getItem('ent_locked_days_v58')) || {},
+      calendarHolidays: JSON.parse(localStorage.getItem('ent_calendar_v58')) || DEFAULT_CALENDAR_HOLIDAYS,
+      shiftConfigs: JSON.parse(localStorage.getItem('ent_shifts_v58')) || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 },
       activeShift: 'GENERAL',
       selectedWeek: '25',
       currentMonth: 'September-2026'
@@ -761,6 +791,22 @@
     }
 
     function getWeekDates(weekNum, year = 2026) {
+      if (String(weekNum) === '25') {
+        return {
+          days: [
+            { dayCol: 0, dateStr: '2026-09-14', dayLabel: 'Mon, 14 Sep' },
+            { dayCol: 1, dateStr: '2026-09-15', dayLabel: 'Tue, 15 Sep' },
+            { dayCol: 2, dateStr: '2026-09-16', dayLabel: 'Wed, 16 Sep' },
+            { dayCol: 3, dateStr: '2026-09-17', dayLabel: 'Thu, 17 Sep' },
+            { dayCol: 4, dateStr: '2026-09-18', dayLabel: 'Fri, 18 Sep' },
+            { dayCol: 5, dateStr: '2026-09-19', dayLabel: 'Sat, 19 Sep' },
+            { dayCol: 6, dateStr: '2026-09-20', dayLabel: 'Sun, 20 Sep' }
+          ],
+          monthStr: 'September-2026',
+          mondayDate: '2026-09-14'
+        };
+      }
+
       const jan4 = new Date(year, 0, 4);
       const dayOffset = (jan4.getDay() === 0 ? 7 : jan4.getDay()) - 1;
       const week1Mon = new Date(year, 0, 4 - dayOffset);
@@ -769,7 +815,6 @@
       const days = [];
       const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const fullMonthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
       for (let i = 0; i < 7; i++) {
         const d = new Date(targetMon.getTime() + i * 86400000);
@@ -783,19 +828,70 @@
         });
       }
 
-      const thursDate = new Date(targetMon.getTime() + 3 * 86400000);
-      const monthStr = `${fullMonthNames[thursDate.getMonth()]}-${thursDate.getFullYear()}`;
-
+      const monthStr = `September-2026`;
       return { days, monthStr, mondayDate: days[0].dateStr };
     }
 
+    function getAvailableWeeks() {
+      let weeks = ['25'];
+      const today = new Date();
+      const w25Meta = getWeekDates(25);
+      const nextMon = new Date(new Date(w25Meta.mondayDate).getTime() + 7 * 86400000);
+
+      Object.keys(state.userProjects).forEach(emp => {
+        if (state.userProjects[emp]['26'] && state.userProjects[emp]['26'].length > 0) {
+          if (!weeks.includes('26')) weeks.push('26');
+        }
+      });
+      const hasWeek26Override = state.calendarHolidays.some(h => String(h.week) === '26');
+      if ((today >= nextMon || hasWeek26Override) && !weeks.includes('26')) {
+        weeks.push('26');
+      }
+
+      return weeks;
+    }
+
+    function updateWeekDropdownOptions() {
+      const selectWeek = document.getElementById('select-week');
+      const exportWeekVal = document.getElementById('export-week-val');
+      const holidayWeek = document.getElementById('holiday-input-week');
+      const calFilter = document.getElementById('calendar-table-filter');
+
+      const available = getAvailableWeeks();
+
+      const weekLabels = {
+        '25': 'Week 25 (14-09-2026 to 20-09-2026)',
+        '26': 'Week 26 (Next Week)'
+      };
+
+      if (selectWeek) {
+        const currentVal = selectWeek.value;
+        selectWeek.innerHTML = available.map(w => `<option value="${w}">${weekLabels[w] || 'Week ' + w}</option>`).join('');
+        if (available.includes(currentVal)) selectWeek.value = currentVal;
+      }
+
+      if (exportWeekVal) {
+        exportWeekVal.innerHTML = available.map(w => `<option value="Week_${w}">Week ${w} (14-09-2026 to 20-09-2026)</option>`).join('');
+      }
+
+      if (holidayWeek) {
+        holidayWeek.innerHTML = available.map(w => `<option value="${w}">Week ${w}</option>`).join('');
+      }
+
+      if (calFilter) {
+        const curFilter = calFilter.value;
+        calFilter.innerHTML = `<option value="ALL">All Weeks</option>` + available.map(w => `<option value="${w}">Week ${w}</option>`).join('');
+        calFilter.value = curFilter;
+      }
+    }
+
     function saveState() {
-      localStorage.setItem('ent_users_v42', JSON.stringify(state.users));
-      localStorage.setItem('ent_recycle_v42', JSON.stringify(state.recycleBin));
-      localStorage.setItem('ent_projects_v42', JSON.stringify(state.userProjects));
-      localStorage.setItem('ent_locked_days_v42', JSON.stringify(state.lockedDays));
-      localStorage.setItem('ent_calendar_v42', JSON.stringify(state.calendarHolidays));
-      localStorage.setItem('ent_shifts_v42', JSON.stringify(state.shiftConfigs));
+      localStorage.setItem('ent_users_v58', JSON.stringify(state.users));
+      localStorage.setItem('ent_recycle_v58', JSON.stringify(state.recycleBin));
+      localStorage.setItem('ent_projects_v58', JSON.stringify(state.userProjects));
+      localStorage.setItem('ent_locked_days_v58', JSON.stringify(state.lockedDays));
+      localStorage.setItem('ent_calendar_v58', JSON.stringify(state.calendarHolidays));
+      localStorage.setItem('ent_shifts_v58', JSON.stringify(state.shiftConfigs));
 
       if (isCloudConnected && db) {
         db.collection("enterprise_workforce").doc("portal_state").set({
@@ -831,6 +927,8 @@
       const msg = document.getElementById('toast-message');
       const icon = document.getElementById('toast-icon');
 
+      if (!banner || !msg || !icon) return;
+
       msg.textContent = message;
       if (type === 'success') {
         banner.className = 'rounded-lg p-3 text-xs font-semibold flex items-center justify-between shadow-sm bg-emerald-50 text-emerald-800 border border-emerald-200';
@@ -851,6 +949,7 @@
       lucide.createIcons();
       setupEventListeners();
       setupInactivityTracking();
+      updateWeekDropdownOptions();
 
       if (isCloudConnected && db) {
         db.collection("enterprise_workforce").doc("portal_state").onSnapshot(doc => {
@@ -863,6 +962,7 @@
             state.calendarHolidays = data.calendarHolidays || DEFAULT_CALENDAR_HOLIDAYS;
             state.shiftConfigs = data.shiftConfigs || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 };
             updateSyncBadge(true);
+            updateWeekDropdownOptions();
 
             if (state.currentUser) {
               const fresh = state.users.find(u => u.empId.toUpperCase() === state.currentUser.empId.toUpperCase());
@@ -898,16 +998,28 @@
     }
 
     function openLoginModal() {
-      document.getElementById('modal-login').classList.remove('hidden');
+      const loginModal = document.getElementById('modal-login');
+      if (loginModal) loginModal.classList.remove('hidden');
+      const idInput = document.getElementById('login-empid');
+      const passInput = document.getElementById('login-password');
+      const errBox = document.getElementById('login-error-msg');
+      if (idInput) idInput.value = '';
+      if (passInput) passInput.value = '';
+      if (errBox) errBox.classList.add('hidden');
     }
 
     function authenticateUser(user) {
       state.currentUser = user;
       localStorage.setItem('ent_logged_empid', user.empId);
-      document.getElementById('modal-login').classList.add('hidden');
       
-      document.getElementById('nav-user-name').textContent = user.name;
-      document.getElementById('dropdown-user-id').textContent = `${user.empId} (${user.role})`;
+      const loginModal = document.getElementById('modal-login');
+      if (loginModal) loginModal.classList.add('hidden');
+      
+      const navName = document.getElementById('nav-user-name');
+      if (navName) navName.textContent = user.name;
+      
+      const dropdownId = document.getElementById('dropdown-user-id');
+      if (dropdownId) dropdownId.textContent = `${user.empId} (${user.role})`;
 
       const isExecutive = (user.role === 'MANAGER' || user.role === 'ADMIN');
       const isAdmin = (user.role === 'ADMIN');
@@ -917,30 +1029,45 @@
         adminEditBtn.classList.toggle('hidden', !isAdmin);
       }
 
-      document.getElementById('btn-open-recycle-bin').classList.toggle('hidden', !isAdmin);
+      const recycleBinBtn = document.getElementById('btn-open-recycle-bin');
+      if (recycleBinBtn) {
+        recycleBinBtn.classList.toggle('hidden', !isAdmin);
+      }
+
+      const createUserBtn = document.getElementById('btn-create-user-modal');
+      if (createUserBtn) {
+        createUserBtn.classList.toggle('hidden', !isAdmin);
+      }
 
       const badgeContainer = document.getElementById('role-badge-container');
-      badgeContainer.innerHTML = `
-        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-          user.role === 'ADMIN' ? 'bg-purple-900/60 text-purple-200 border border-purple-700' :
-          user.role === 'MANAGER' ? 'bg-indigo-900/60 text-indigo-200 border border-indigo-700' :
-          user.role === 'SUPERVISOR' ? 'bg-emerald-900/60 text-emerald-200 border border-emerald-700' :
-          'bg-slate-800 text-slate-300'
-        }">${user.role}</span>
-      `;
+      if (badgeContainer) {
+        badgeContainer.innerHTML = `
+          <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+            user.role === 'ADMIN' ? 'bg-purple-900/60 text-purple-200 border border-purple-700' :
+            user.role === 'MANAGER' ? 'bg-indigo-900/60 text-indigo-200 border border-indigo-700' :
+            user.role === 'SUPERVISOR' ? 'bg-emerald-900/60 text-emerald-200 border border-emerald-700' :
+            'bg-slate-800 text-slate-300'
+          }">${user.role}</span>
+        `;
+      }
+
+      const govContainer = document.getElementById('governance-container');
+      const timeSection = document.getElementById('timesheet-section');
+      const metricCard = document.getElementById('efficiency-metric-card');
 
       if (isExecutive) {
-        document.getElementById('governance-container').classList.remove('hidden');
-        document.getElementById('timesheet-section').classList.add('hidden');
-        document.getElementById('efficiency-metric-card').classList.add('hidden');
+        if (govContainer) govContainer.classList.remove('hidden');
+        if (timeSection) timeSection.classList.add('hidden');
+        if (metricCard) metricCard.classList.add('hidden');
         renderGovernanceView();
       } else {
-        document.getElementById('governance-container').classList.add('hidden');
-        document.getElementById('timesheet-section').classList.remove('hidden');
-        document.getElementById('efficiency-metric-card').classList.remove('hidden');
+        if (govContainer) govContainer.classList.add('hidden');
+        if (timeSection) timeSection.classList.remove('hidden');
+        if (metricCard) metricCard.classList.remove('hidden');
         renderTimesheetGrid();
       }
       resetInactivityTimer();
+      updateWeekDropdownOptions();
       lucide.createIcons();
     }
 
@@ -954,16 +1081,15 @@
       }
       if (!state.userProjects[empId][weekNum]) {
         state.userProjects[empId][weekNum] = [
-          { code: 'PROJECT-01', hours: [7.5, 7.5, 7.5, 7.5, 7.5, 7.5, 0] }
+          { code: 'PROJECT-01', hours: [0, 0, 0, 0, 0, 0, 0] }
         ];
       }
       return state.userProjects[empId][weekNum];
     }
 
-    // Calendar-Driven Efficiency Engine (Monday through Saturday default active)
     function calculateCalendarEfficiency(dayTotals, targetHours, weekNumber) {
       const activeWeek = String(weekNumber || state.selectedWeek);
-      let activeDays = new Set([0, 1, 2, 3, 4, 5]); // Mon (0) through Sat (5)
+      let activeDays = new Set([0, 1, 2, 3, 4, 5]);
 
       state.calendarHolidays.forEach(h => {
         if (String(h.week) === activeWeek) {
@@ -1001,25 +1127,12 @@
       if (dayIdx === 6 && (!calHoliday || calHoliday.type !== 'working')) {
         return 'col-holiday';
       }
-      if (calHoliday && calHoliday.type === 'working') {
-        // Fall through
-      }
 
       if (dayTotal > 0) {
         return 'col-updated';
       }
 
-      const today = new Date();
-      const todayYYYY = today.getFullYear();
-      const todayMM = String(today.getMonth() + 1).padStart(2, '0');
-      const todayDD = String(today.getDate()).padStart(2, '0');
-      const todayStr = `${todayYYYY}-${todayMM}-${todayDD}`;
-
-      if (dateStr > todayStr) {
-        return 'col-upcoming';
-      } else {
-        return 'col-not-updated';
-      }
+      return 'col-not-updated';
     }
 
     function renderTimesheetGrid() {
@@ -1029,6 +1142,9 @@
       const weekMeta = getWeekDates(state.selectedWeek);
       state.currentMonth = weekMeta.monthStr;
       
+      const monthDisplay = document.getElementById('display-month');
+      if (monthDisplay) monthDisplay.textContent = weekMeta.monthStr;
+
       weekMeta.days.forEach(d => {
         const th = document.getElementById(`th-day-${d.dayCol}`);
         if (th) th.textContent = d.dayLabel;
@@ -1105,9 +1221,12 @@
               }).join('')}
 
               <td class="py-2 px-2 text-center font-mono font-bold text-slate-900 border-r border-slate-200">${rowSum.toFixed(1)}</td>
-              <td class="py-2 px-2 text-center">
-                <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1">
-                  <i data-lucide="trash-2" class="w-4 h-4 mx-auto"></i>
+              <td class="py-2 px-2 text-center space-x-1">
+                <button onclick="clearProjectRow(${rIdx})" class="text-amber-500 hover:text-amber-700 transition p-1" title="Clear Row">
+                  <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 inline"></i>
+                </button>
+                <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1" title="Delete Row">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5 inline"></i>
                 </button>
               </td>
             </tr>
@@ -1166,6 +1285,15 @@
       saveState();
     };
 
+    window.clearProjectRow = (rIdx) => {
+      const user = state.currentUser;
+      const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+      rows[rIdx].hours = [0, 0, 0, 0, 0, 0, 0];
+      saveState();
+      renderTimesheetGrid();
+      showToast('Row hours cleared.', 'info');
+    };
+
     window.deleteProjectRow = (rIdx) => {
       const user = state.currentUser;
       const rows = getUserWeekProjects(user.empId, state.selectedWeek);
@@ -1193,12 +1321,12 @@
 
       const chartWeekBadge = document.getElementById('chart-week-badge');
       if (chartWeekBadge) {
-        chartWeekBadge.textContent = `Week ${state.selectedWeek} (${weekMeta.monthStr})`;
+        chartWeekBadge.textContent = `Week 25 Metrics`;
       }
 
       const tableWeekHeading = document.getElementById('table-week-heading');
       if (tableWeekHeading) {
-        tableWeekHeading.textContent = `Team Work Efficiency Matrix (Week ${state.selectedWeek})`;
+        tableWeekHeading.textContent = `Team Work Efficiency Matrix (Week 25: 14-09-2026 to 20-09-2026)`;
       }
 
       let chartLabels = [];
@@ -1217,22 +1345,27 @@
           chartLabels.push(emp.name);
           chartEfficiencies.push(metrics.efficiency);
 
+          const dayCellsHtml = dayTotals.map((tot, idx) => {
+            const dMeta = weekMeta.days[idx];
+            const cssClass = getDayStatusClass(idx, tot, dMeta.dateStr, state.selectedWeek);
+            return `<td class="px-2 py-3 text-center ${cssClass} font-bold">${tot.toFixed(1)}</td>`;
+          }).join('');
+
           return `
             <tr class="hover:bg-slate-50 transition">
-              <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
-              <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
-              <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">${emp.role}</span></td>
-              <td class="px-4 py-3 text-center font-mono text-slate-600">${metrics.plannedTarget.toFixed(1)} hrs</td>
-              <td class="px-4 py-3 text-center font-mono font-bold text-slate-800">${metrics.actualLogged.toFixed(1)} hrs</td>
-              <td class="px-4 py-3 text-center font-mono font-bold ${metrics.efficiency >= 100 ? 'text-emerald-600' : 'text-amber-600'}">${metrics.efficiency}%</td>
-              <td class="px-4 py-3 text-center">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${weekLocked.length > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'}">
-                  ${weekLocked.length > 0 ? `${weekLocked.length} Day(s) Locked` : 'Editable'}
-                </span>
+              <td class="px-2 py-3 font-bold text-slate-800">${emp.empId}</td>
+              <td class="px-3 py-3 font-medium text-slate-900">
+                <button onclick="window.inspectEmployeeTasks('${emp.empId}', '${emp.name}')" class="text-indigo-600 hover:text-indigo-900 font-bold hover:underline flex items-center space-x-1">
+                  <span>${emp.name}</span>
+                  <i data-lucide="external-link" class="w-3 h-3"></i>
+                </button>
               </td>
-              <td class="px-4 py-3 text-right">
+              ${dayCellsHtml}
+              <td class="px-3 py-3 text-center font-bold text-slate-900">${metrics.actualLogged.toFixed(1)}</td>
+              <td class="px-3 py-3 text-center font-bold ${metrics.efficiency >= 100 ? 'text-emerald-600' : 'text-amber-600'}">${metrics.efficiency}%</td>
+              <td class="px-3 py-3 text-right">
                 ${weekLocked.length > 0 ? `
-                  <button onclick="window.unlockAllDaysForEmployee('${emp.empId}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded font-semibold transition text-xs">Unlock</button>
+                  <button onclick="window.unlockAllDaysForEmployee('${emp.empId}')" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded font-semibold transition text-[11px]">Unlock</button>
                 ` : `<span class="text-[11px] text-slate-400">Open</span>`}
               </td>
             </tr>
@@ -1276,6 +1409,37 @@
       lucide.createIcons();
     }
 
+    window.inspectEmployeeTasks = (empId, empName) => {
+      document.getElementById('inspect-modal-title').textContent = `${empName} (${empId})`;
+      document.getElementById('inspect-modal-subtitle').textContent = `Inspecting project tasks & logged hours for Week 25 (14-09-2026 to 20-09-2026)`;
+
+      const rows = getUserWeekProjects(empId, state.selectedWeek);
+      const tbody = document.getElementById('inspect-tasks-tbody');
+
+      if (!rows || rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">No project tasks logged for this week.</td></tr>`;
+      } else {
+        tbody.innerHTML = rows.map(r => {
+          const sum = r.hours.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+          return `
+            <tr class="border-b hover:bg-slate-50">
+              <td class="p-2.5 font-bold text-blue-950 uppercase">${r.code}</td>
+              <td class="p-2.5 text-center">${r.hours[0] || 0}</td>
+              <td class="p-2.5 text-center">${r.hours[1] || 0}</td>
+              <td class="p-2.5 text-center">${r.hours[2] || 0}</td>
+              <td class="p-2.5 text-center">${r.hours[3] || 0}</td>
+              <td class="p-2.5 text-center">${r.hours[4] || 0}</td>
+              <td class="p-2.5 text-center">${r.hours[5] || 0}</td>
+              <td class="p-2.5 text-center">${r.hours[6] || 0}</td>
+              <td class="p-2.5 text-center font-bold text-indigo-700">${sum.toFixed(1)}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+      document.getElementById('modal-inspect-employee').classList.remove('hidden');
+      lucide.createIcons();
+    };
+
     function renderEfficiencyBarChart(labels, values) {
       const ctx = document.getElementById('teamEfficiencyChart');
       if (!ctx) return;
@@ -1297,7 +1461,6 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
-            // Display percentage labels directly above bars
             datalabels: {
               anchor: 'end',
               align: 'top',
@@ -1524,6 +1687,7 @@
       }
 
       saveState();
+      updateWeekDropdownOptions();
       renderCalendarDeclarationsTable();
       renderGovernanceView();
       renderTimesheetGrid();
@@ -1534,10 +1698,23 @@
       if (idx > -1) {
         const removed = state.calendarHolidays.splice(idx, 1)[0];
         saveState();
+        updateWeekDropdownOptions();
         renderCalendarDeclarationsTable();
         renderGovernanceView();
         renderTimesheetGrid();
         showToast(`Deleted override for ${removed.dayName || removed.date} (Week ${removed.week}).`, 'info');
+      }
+    };
+
+    window.clearAllCalendarOverrides = () => {
+      if (confirm('Are you sure you want to clear all configured calendar overrides?')) {
+        state.calendarHolidays = [];
+        saveState();
+        updateWeekDropdownOptions();
+        renderCalendarDeclarationsTable();
+        renderGovernanceView();
+        renderTimesheetGrid();
+        showToast('All calendar overrides cleared.', 'info');
       }
     };
 
@@ -1648,11 +1825,11 @@
     function executeCsvExport() {
       const scope = document.getElementById('export-scope-type').value;
       const weekVal = document.getElementById('export-week-val').value.replace('Week_', '');
-      const fileName = `TVS_Workforce_Efficiency_Week_${weekVal}.csv`;
+      const fileName = `TVS_Work_Details_Full_Report_Week_${weekVal}.csv`;
       const targetHours = state.shiftConfigs[state.activeShift] || SHIFTS[state.activeShift].targetWeekday;
 
       let csv = '\uFEFF';
-      csv += 'Emp ID,Full Name,Role,Department,Week,Planned Target (Hrs),Actual Logged (Hrs),Efficiency (%)\n';
+      csv += 'Emp ID,Full Name,Role,Department,Week,Project Code,Mon (14 Sep),Tue (15 Sep),Wed (16 Sep),Thu (17 Sep),Fri (18 Sep),Sat (19 Sep),Sun (20 Sep),Total Logged (Hrs),Planned Target (Hrs),Efficiency (%)\n';
 
       state.users.filter(u => !u.isProtected && u.role !== 'ADMIN' && u.role !== 'MANAGER').forEach(emp => {
         const rows = getUserWeekProjects(emp.empId, weekVal);
@@ -1661,7 +1838,10 @@
 
         const metrics = calculateCalendarEfficiency(dayTotals, targetHours, weekVal);
 
-        csv += `"${emp.empId}","${emp.name}","${emp.role}","${emp.dept || 'Operations'}","Week ${weekVal}",${metrics.plannedTarget.toFixed(1)},${metrics.actualLogged.toFixed(1)},${metrics.efficiency}%\n`;
+        rows.forEach(r => {
+          const rowSum = r.hours.reduce((a, b) => a + (parseFloat(b) || 0), 0);
+          csv += `"${emp.empId}","${emp.name}","${emp.role}","${emp.dept || 'Operations'}","Week ${weekVal}","${r.code}",${r.hours.join(',')},${rowSum.toFixed(1)},${metrics.plannedTarget.toFixed(1)},"${metrics.efficiency}%"\n`;
+        });
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1674,14 +1854,14 @@
       document.body.removeChild(link);
 
       document.getElementById('modal-export').classList.add('hidden');
-      showToast(`Exported ${fileName}`, 'success');
+      showToast(`Exported full work details: ${fileName}`, 'success');
     }
 
     function setupEventListeners() {
-      const arrowBtn = document.getElementById('user-dropdown-arrow-btn');
+      const userBtn = document.getElementById('user-menu-btn');
       const dropdown = document.getElementById('user-menu-dropdown');
-      if (arrowBtn && dropdown) {
-        arrowBtn.addEventListener('click', e => {
+      if (userBtn && dropdown) {
+        userBtn.addEventListener('click', e => {
           e.stopPropagation();
           dropdown.classList.toggle('hidden');
         });
@@ -1690,223 +1870,278 @@
         if (dropdown) dropdown.classList.add('hidden');
       });
 
-      document.getElementById('btn-logout').addEventListener('click', () => {
-        localStorage.removeItem('ent_logged_empid');
-        state.currentUser = null;
-        openLoginModal();
-        showToast('Logged out successfully.', 'info');
-      });
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          localStorage.removeItem('ent_logged_empid');
+          state.currentUser = null;
+          openLoginModal();
+          showToast('Logged out successfully.', 'info');
+        });
+      }
 
-      document.getElementById('btn-edit-admin-profile').addEventListener('click', () => {
-        if (dropdown) dropdown.classList.add('hidden');
-        if (!state.currentUser || state.currentUser.role !== 'ADMIN') {
-          showToast('Only Admin accounts can edit this profile.', 'error');
-          return;
-        }
-        document.getElementById('input-admin-name').value = state.currentUser.name || '';
-        document.getElementById('input-admin-pass').value = state.currentUser.password || '';
-        document.getElementById('input-admin-dept').value = state.currentUser.dept || '';
-        document.getElementById('modal-admin-self-edit').classList.remove('hidden');
-      });
+      const editAdminBtn = document.getElementById('btn-edit-admin-profile');
+      if (editAdminBtn) {
+        editAdminBtn.addEventListener('click', () => {
+          if (dropdown) dropdown.classList.add('hidden');
+          if (!state.currentUser || state.currentUser.role !== 'ADMIN') {
+            showToast('Only Admin accounts can edit this profile.', 'error');
+            return;
+          }
+          document.getElementById('input-admin-name').value = state.currentUser.name || '';
+          document.getElementById('input-admin-pass').value = state.currentUser.password || '';
+          document.getElementById('input-admin-dept').value = state.currentUser.dept || '';
+          document.getElementById('modal-admin-self-edit').classList.remove('hidden');
+        });
+      }
 
-      document.getElementById('form-admin-self-edit').addEventListener('submit', e => {
-        e.preventDefault();
-        if (!state.currentUser || state.currentUser.role !== 'ADMIN') return;
-        
-        const newName = document.getElementById('input-admin-name').value.trim();
-        const newPass = document.getElementById('input-admin-pass').value.trim();
-        const newDept = document.getElementById('input-admin-dept').value.trim();
+      const adminForm = document.getElementById('form-admin-self-edit');
+      if (adminForm) {
+        adminForm.addEventListener('submit', e => {
+          e.preventDefault();
+          if (!state.currentUser || state.currentUser.role !== 'ADMIN') return;
+          
+          const newName = document.getElementById('input-admin-name').value.trim();
+          const newPass = document.getElementById('input-admin-pass').value.trim();
+          const newDept = document.getElementById('input-admin-dept').value.trim();
 
-        const adminIdx = state.users.findIndex(u => u.empId.toUpperCase() === state.currentUser.empId.toUpperCase());
-        if (adminIdx > -1) {
-          state.users[adminIdx].name = newName;
-          state.users[adminIdx].password = newPass;
-          state.users[adminIdx].dept = newDept;
+          const adminIdx = state.users.findIndex(u => u.empId.toUpperCase() === state.currentUser.empId.toUpperCase());
+          if (adminIdx > -1) {
+            state.users[adminIdx].name = newName;
+            state.users[adminIdx].password = newPass;
+            state.users[adminIdx].dept = newDept;
 
-          state.currentUser.name = newName;
-          state.currentUser.password = newPass;
-          state.currentUser.dept = newDept;
-        }
+            state.currentUser.name = newName;
+            state.currentUser.password = newPass;
+            state.currentUser.dept = newDept;
+          }
 
-        saveState();
-        document.getElementById('modal-admin-self-edit').classList.add('hidden');
-        document.getElementById('nav-user-name').textContent = newName;
-        showToast('Admin credentials updated successfully.', 'success');
-      });
-
-      document.getElementById('btn-open-calendar-settings').addEventListener('click', () => {
-        document.getElementById('cfg-shift1-hrs').value = state.shiftConfigs['1ST'] || 7.5;
-        document.getElementById('cfg-shift2-hrs').value = state.shiftConfigs['2ND'] || 7.5;
-        document.getElementById('cfg-shift3-hrs').value = state.shiftConfigs['3RD'] || 6.5;
-        document.getElementById('cfg-shiftG-hrs').value = state.shiftConfigs['GENERAL'] || 7.5;
-        document.getElementById('calendar-table-filter').value = state.selectedWeek;
-        document.getElementById('holiday-input-week').value = state.selectedWeek;
-
-        const weekMeta = getWeekDates(state.selectedWeek);
-        document.getElementById('holiday-input-date').value = weekMeta.mondayDate;
-
-        cancelCalendarEdit();
-        renderCalendarDeclarationsTable();
-        document.getElementById('modal-calendar-settings').classList.remove('hidden');
-      });
-
-      document.getElementById('btn-copy-chart').addEventListener('click', window.copyGraphToClipboard);
-
-      document.getElementById('btn-open-export-modal').addEventListener('click', () => {
-        document.getElementById('modal-export').classList.remove('hidden');
-      });
-
-      document.getElementById('btn-confirm-export').addEventListener('click', executeCsvExport);
-
-      document.getElementById('btn-create-user-modal').addEventListener('click', () => {
-        document.getElementById('form-user-original-empid').value = '';
-        document.getElementById('form-user-governance').reset();
-        document.getElementById('user-modal-title-text').textContent = 'Add New Employee';
-        document.getElementById('btn-save-user-text').textContent = 'Create Account';
-        document.getElementById('modal-user-form').classList.remove('hidden');
-      });
-
-      document.getElementById('btn-open-recycle-bin').addEventListener('click', () => {
-        renderRecycleBin();
-        document.getElementById('modal-recycle-bin').classList.remove('hidden');
-      });
-
-      document.getElementById('btn-add-project').addEventListener('click', () => {
-        document.getElementById('input-new-project-code').value = '';
-        document.getElementById('modal-add-project').classList.remove('hidden');
-      });
-
-      document.getElementById('form-add-project').addEventListener('submit', e => {
-        e.preventDefault();
-        const code = document.getElementById('input-new-project-code').value.trim().toUpperCase();
-        if (code && state.currentUser) {
-          const rows = getUserWeekProjects(state.currentUser.empId, state.selectedWeek);
-          rows.push({ code, hours: [0, 0, 0, 0, 0, 0, 0] });
           saveState();
-          document.getElementById('modal-add-project').classList.add('hidden');
-          renderTimesheetGrid();
-          showToast(`Project ${code} added for Week ${state.selectedWeek}.`, 'success');
-        }
-      });
+          document.getElementById('modal-admin-self-edit').classList.add('hidden');
+          document.getElementById('nav-user-name').textContent = newName;
+          showToast('Admin credentials updated successfully.', 'success');
+        });
+      }
 
-      document.getElementById('btn-save-draft').addEventListener('click', () => {
-        saveState();
-        showToast('Timesheet draft saved.', 'info');
-      });
+      const calSettingsBtn = document.getElementById('btn-open-calendar-settings');
+      if (calSettingsBtn) {
+        calSettingsBtn.addEventListener('click', () => {
+          document.getElementById('cfg-shift1-hrs').value = state.shiftConfigs['1ST'] || 7.5;
+          document.getElementById('cfg-shift2-hrs').value = state.shiftConfigs['2ND'] || 7.5;
+          document.getElementById('cfg-shift3-hrs').value = state.shiftConfigs['3RD'] || 6.5;
+          document.getElementById('cfg-shiftG-hrs').value = state.shiftConfigs['GENERAL'] || 7.5;
+          document.getElementById('calendar-table-filter').value = state.selectedWeek;
+          document.getElementById('holiday-input-week').value = state.selectedWeek;
 
-      document.getElementById('btn-submit-timesheet').addEventListener('click', () => {
-        try {
-          if (!state.currentUser) {
-            showToast('User session expired. Please sign in.', 'error');
-            return;
-          }
+          const weekMeta = getWeekDates(state.selectedWeek);
+          document.getElementById('holiday-input-date').value = weekMeta.mondayDate;
 
-          const user = state.currentUser;
-          const rows = getUserWeekProjects(user.empId, state.selectedWeek);
-          if (!rows || !Array.isArray(rows) || rows.length === 0) {
-            showToast('No project rows to submit.', 'error');
-            return;
-          }
+          cancelCalendarEdit();
+          renderCalendarDeclarationsTable();
+          document.getElementById('modal-calendar-settings').classList.remove('hidden');
+        });
+      }
 
-          const dayTotals = [0, 0, 0, 0, 0, 0, 0];
-          rows.forEach(r => {
-            if (r.hours && Array.isArray(r.hours)) {
-              r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0);
-            }
-          });
+      const copyChartBtn = document.getElementById('btn-copy-chart');
+      if (copyChartBtn) {
+        copyChartBtn.addEventListener('click', window.copyGraphToClipboard);
+      }
 
-          const newlyLocked = [];
-          dayTotals.forEach((tot, idx) => {
-            if (tot > 0) newlyLocked.push(idx);
-          });
+      const exportModalBtn = document.getElementById('btn-open-export-modal');
+      if (exportModalBtn) {
+        exportModalBtn.addEventListener('click', () => {
+          document.getElementById('modal-export').classList.remove('hidden');
+        });
+      }
 
-          if (newlyLocked.length === 0) {
-            showToast('Please log hours on at least one working day before submitting.', 'error');
-            return;
-          }
+      const confirmExportBtn = document.getElementById('btn-confirm-export');
+      if (confirmExportBtn) {
+        confirmExportBtn.addEventListener('click', executeCsvExport);
+      }
 
-          if (confirm(`Submit work log for Week ${state.selectedWeek}? Updated days will be locked.`)) {
-            if (!state.lockedDays) state.lockedDays = {};
-            if (typeof state.lockedDays[user.empId] !== 'object' || Array.isArray(state.lockedDays[user.empId])) {
-              state.lockedDays[user.empId] = {};
-            }
+      const createUserBtn = document.getElementById('btn-create-user-modal');
+      if (createUserBtn) {
+        createUserBtn.addEventListener('click', () => {
+          document.getElementById('form-user-original-empid').value = '';
+          document.getElementById('form-user-governance').reset();
+          document.getElementById('user-modal-title-text').textContent = 'Add New Employee';
+          document.getElementById('btn-save-user-text').textContent = 'Create Account';
+          document.getElementById('modal-user-form').classList.remove('hidden');
+        });
+      }
 
-            const currentWeekLocked = state.lockedDays[user.empId][state.selectedWeek] || [];
-            state.lockedDays[user.empId][state.selectedWeek] = Array.from(new Set([...currentWeekLocked, ...newlyLocked]));
+      const recycleBinBtn = document.getElementById('btn-open-recycle-bin');
+      if (recycleBinBtn) {
+        recycleBinBtn.addEventListener('click', () => {
+          renderRecycleBin();
+          document.getElementById('modal-recycle-bin').classList.remove('hidden');
+        });
+      }
 
+      const addProjBtn = document.getElementById('btn-add-project');
+      if (addProjBtn) {
+        addProjBtn.addEventListener('click', () => {
+          document.getElementById('input-new-project-code').value = '';
+          document.getElementById('modal-add-project').classList.remove('hidden');
+        });
+      }
+
+      const addProjForm = document.getElementById('form-add-project');
+      if (addProjForm) {
+        addProjForm.addEventListener('submit', e => {
+          e.preventDefault();
+          const code = document.getElementById('input-new-project-code').value.trim().toUpperCase();
+          if (code && state.currentUser) {
+            const rows = getUserWeekProjects(state.currentUser.empId, state.selectedWeek);
+            rows.push({ code, hours: [0, 0, 0, 0, 0, 0, 0] });
             saveState();
+            updateWeekDropdownOptions();
+            document.getElementById('modal-add-project').classList.add('hidden');
             renderTimesheetGrid();
-            showToast(`Work log for Week ${state.selectedWeek} submitted and locked successfully.`, 'success');
+            showToast(`Project ${code} added for Week ${state.selectedWeek}.`, 'success');
           }
-        } catch (err) {
-          console.error("Submission error:", err);
-          showToast("Failed to lock timesheet. Please try again.", "error");
-        }
-      });
+        });
+      }
 
-      document.getElementById('form-user-governance').addEventListener('submit', e => {
-        e.preventDefault();
-        const originalEmpId = document.getElementById('form-user-original-empid').value.trim().toUpperCase();
-        const newEmpId = document.getElementById('input-user-empid').value.trim().toUpperCase();
-        const name = document.getElementById('input-user-fullname').value.trim();
-        const password = document.getElementById('input-user-password').value.trim();
-        const role = document.getElementById('input-user-role').value;
-        const dept = document.getElementById('input-user-dept').value.trim();
+      const saveDraftBtn = document.getElementById('btn-save-draft');
+      if (saveDraftBtn) {
+        saveDraftBtn.addEventListener('click', () => {
+          saveState();
+          showToast('Timesheet draft saved.', 'info');
+        });
+      }
 
-        if (originalEmpId) {
-          const idx = state.users.findIndex(u => u.empId.toUpperCase() === originalEmpId);
-          if (idx > -1) {
-            state.users[idx] = { empId: newEmpId, name, password, role, dept };
-            if (originalEmpId !== newEmpId && state.userProjects[originalEmpId]) {
-              state.userProjects[newEmpId] = state.userProjects[originalEmpId];
-              delete state.userProjects[originalEmpId];
+      const submitTimesheetBtn = document.getElementById('btn-submit-timesheet');
+      if (submitTimesheetBtn) {
+        submitTimesheetBtn.addEventListener('click', () => {
+          try {
+            if (!state.currentUser) {
+              showToast('User session expired. Please sign in.', 'error');
+              return;
             }
+
+            const user = state.currentUser;
+            const rows = getUserWeekProjects(user.empId, state.selectedWeek);
+            if (!rows || !Array.isArray(rows) || rows.length === 0) {
+              showToast('No project rows to submit.', 'error');
+              return;
+            }
+
+            const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+            rows.forEach(r => {
+              if (r.hours && Array.isArray(r.hours)) {
+                r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0);
+              }
+            });
+
+            const newlyLocked = [];
+            dayTotals.forEach((tot, idx) => {
+              if (tot > 0) newlyLocked.push(idx);
+            });
+
+            if (newlyLocked.length === 0) {
+              showToast('Please log hours on at least one working day before submitting.', 'error');
+              return;
+            }
+
+            if (confirm(`Submit work log for Week ${state.selectedWeek}? Updated days will be locked.`)) {
+              if (!state.lockedDays) state.lockedDays = {};
+              if (typeof state.lockedDays[user.empId] !== 'object' || Array.isArray(state.lockedDays[user.empId])) {
+                state.lockedDays[user.empId] = {};
+              }
+
+              const currentWeekLocked = state.lockedDays[user.empId][state.selectedWeek] || [];
+              state.lockedDays[user.empId][state.selectedWeek] = Array.from(new Set([...currentWeekLocked, ...newlyLocked]));
+
+              saveState();
+              updateWeekDropdownOptions();
+              renderTimesheetGrid();
+              showToast(`Work log for Week ${state.selectedWeek} submitted and locked successfully.`, 'success');
+            }
+          } catch (err) {
+            console.error("Submission error:", err);
+            showToast("Failed to lock timesheet. Please try again.", "error");
           }
-          showToast(`Account ${newEmpId} updated successfully.`, 'success');
-        } else {
-          if (state.users.some(u => u.empId.toUpperCase() === newEmpId)) {
-            showToast('An account with this Employee ID already exists!', 'error');
-            return;
+        });
+      }
+
+      const userGovForm = document.getElementById('form-user-governance');
+      if (userGovForm) {
+        userGovForm.addEventListener('submit', e => {
+          e.preventDefault();
+          const originalEmpId = document.getElementById('form-user-original-empid').value.trim().toUpperCase();
+          const newEmpId = document.getElementById('input-user-empid').value.trim().toUpperCase();
+          const name = document.getElementById('input-user-fullname').value.trim();
+          const password = document.getElementById('input-user-password').value.trim();
+          const role = document.getElementById('input-user-role').value;
+          const dept = document.getElementById('input-user-dept').value.trim();
+
+          if (originalEmpId) {
+            const idx = state.users.findIndex(u => u.empId.toUpperCase() === originalEmpId);
+            if (idx > -1) {
+              state.users[idx] = { empId: newEmpId, name, password, role, dept };
+              if (originalEmpId !== newEmpId && state.userProjects[originalEmpId]) {
+                state.userProjects[newEmpId] = state.userProjects[originalEmpId];
+                delete state.userProjects[originalEmpId];
+              }
+            }
+            showToast(`Account ${newEmpId} updated successfully.`, 'success');
+          } else {
+            if (state.users.some(u => u.empId.toUpperCase() === newEmpId)) {
+              showToast('An account with this Employee ID already exists!', 'error');
+              return;
+            }
+            state.users.push({ empId: newEmpId, name, password, role, dept });
+            showToast(`User ${newEmpId} created successfully.`, 'success');
           }
-          state.users.push({ empId: newEmpId, name, password, role, dept });
-          showToast(`User ${newEmpId} created successfully.`, 'success');
-        }
 
-        saveState();
-        document.getElementById('modal-user-form').classList.add('hidden');
-        renderGovernanceView();
-      });
-
-      document.getElementById('form-login').addEventListener('submit', e => {
-        e.preventDefault();
-        const empid = document.getElementById('login-empid').value.trim().toUpperCase();
-        const pass = document.getElementById('login-password').value.trim();
-
-        const found = state.users.find(u => u.empId.toUpperCase() === empid && u.password === pass);
-        if (found) {
-          authenticateUser(found);
-          showToast(`Welcome back, ${found.name}!`, 'success');
-        } else {
-          showToast('Invalid Employee ID or password.', 'error');
-        }
-      });
-
-      document.getElementById('select-shift').addEventListener('change', e => {
-        state.activeShift = e.target.value;
-        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) renderGovernanceView();
-        else renderTimesheetGrid();
-      });
-
-      document.getElementById('select-week').addEventListener('change', e => {
-        state.selectedWeek = e.target.value;
-        showToast(`Switched to Week ${state.selectedWeek}`, 'info');
-        
-        if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+          saveState();
+          document.getElementById('modal-user-form').classList.add('hidden');
           renderGovernanceView();
-        } else {
-          renderTimesheetGrid();
-        }
-      });
+        });
+      }
+
+      const loginForm = document.getElementById('form-login');
+      if (loginForm) {
+        loginForm.addEventListener('submit', e => {
+          e.preventDefault();
+          const empid = document.getElementById('login-empid').value.trim().toUpperCase();
+          const pass = document.getElementById('login-password').value.trim();
+
+          const found = state.users.find(u => u.empId.toUpperCase() === empid && u.password === pass);
+          if (found) {
+            authenticateUser(found);
+            showToast(`Welcome back, ${found.name}!`, 'success');
+          } else {
+            const errBox = document.getElementById('login-error-msg');
+            if (errBox) errBox.classList.remove('hidden');
+            showToast('Invalid Employee ID or password. Please check your credentials.', 'error');
+          }
+        });
+      }
+
+      const shiftSelect = document.getElementById('select-shift');
+      if (shiftSelect) {
+        shiftSelect.addEventListener('change', e => {
+          state.activeShift = e.target.value;
+          if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) renderGovernanceView();
+          else renderTimesheetGrid();
+        });
+      }
+
+      const weekSelect = document.getElementById('select-week');
+      if (weekSelect) {
+        weekSelect.addEventListener('change', e => {
+          state.selectedWeek = e.target.value;
+          showToast(`Switched to Week ${state.selectedWeek}`, 'info');
+          
+          if (state.currentUser && (state.currentUser.role === 'MANAGER' || state.currentUser.role === 'ADMIN')) {
+            renderGovernanceView();
+          } else {
+            renderTimesheetGrid();
+          }
+        });
+      }
 
       document.querySelectorAll('.btn-close-modal').forEach(btn => {
         btn.addEventListener('click', () => btn.closest('.fixed').classList.add('hidden'));
