@@ -170,9 +170,9 @@
           <div>
             <h3 class="text-sm font-bold text-slate-900 flex items-center space-x-2">
               <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-600"></i>
-              <span>Team Efficiency (Calendar Basis)</span>
+              <span>Team Efficiency (Sorted Highest to Lowest)</span>
             </h3>
-            <p class="text-xs text-slate-500">Corporate visual report with percentages displayed above bars.</p>
+            <p class="text-xs text-slate-500">Corporate visual report ordered by efficiency percentage.</p>
           </div>
           <div class="flex items-center space-x-2">
             <button id="btn-copy-chart" class="text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-lg flex items-center space-x-1.5 transition">
@@ -189,34 +189,29 @@
         </div>
       </div>
 
-      <!-- Efficiency Table with Color Legend & Coded Day Cells -->
+      <!-- Efficiency Table -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h3 id="table-week-heading" class="text-sm font-bold text-slate-800">Team Work Efficiency Matrix (Week 25: 14-09-2026 to 20-09-2026)</h3>
-            <p class="text-[11px] text-indigo-600 font-semibold mt-0.5">💡 Click any employee's name to inspect tasks. Individual daily cells show color-coded status.</p>
+            <p class="text-[11px] text-indigo-600 font-semibold mt-0.5">💡 Click any employee's name below to review their project tasks &amp; hours for the week.</p>
           </div>
-          <!-- Color Legend for Matrix Table -->
-          <div class="flex flex-wrap items-center gap-2 text-[10px] font-medium text-slate-600 bg-slate-50 px-3 py-1 rounded-lg border">
-            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded col-updated border"></span><span>Updated</span></span>
-            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded col-not-updated border"></span><span>Not Updated (0h)</span></span>
-            <span class="flex items-center space-x-1"><span class="w-2.5 h-2.5 rounded col-holiday border"></span><span>Holiday/Off</span></span>
-          </div>
+          <span class="text-xs font-medium text-slate-500">September 2026</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs text-slate-700">
             <thead class="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase font-semibold">
               <tr>
-                <th class="px-2 py-3">Emp ID</th>
-                <th class="px-3 py-3">Full Name</th>
-                <th class="px-2 py-3 text-center">Mon (14)</th>
-                <th class="px-2 py-3 text-center">Tue (15)</th>
-                <th class="px-2 py-3 text-center">Wed (16)</th>
-                <th class="px-2 py-3 text-center">Thu (17)</th>
-                <th class="px-2 py-3 text-center">Fri (18)</th>
-                <th class="px-2 py-3 text-center">Sat (19)</th>
-                <th class="px-2 py-3 text-center">Sun (20)</th>
-                <th class="px-3 py-3 text-center">Total</th>
+                <th class="px-3 py-3">Emp ID</th>
+                <th class="px-3 py-3">Full Name (Click to Inspect)</th>
+                <th class="px-3 py-3 text-center">Mon (14 Sep)</th>
+                <th class="px-3 py-3 text-center">Tue (15 Sep)</th>
+                <th class="px-3 py-3 text-center">Wed (16 Sep)</th>
+                <th class="px-3 py-3 text-center">Thu (17 Sep)</th>
+                <th class="px-3 py-3 text-center">Fri (18 Sep)</th>
+                <th class="px-3 py-3 text-center">Sat (19 Sep)</th>
+                <th class="px-3 py-3 text-center">Sun (20 Sep)</th>
+                <th class="px-3 py-3 text-center">Total (Hrs)</th>
                 <th class="px-3 py-3 text-center">Efficiency</th>
                 <th class="px-3 py-3 text-right">Actions</th>
               </tr>
@@ -268,9 +263,9 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3 text-[11px] font-medium text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-updated border"></span><span>Updated Day</span></span>
-          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-not-updated border"></span><span>Not Updated (0h)</span></span>
-          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-holiday border"></span><span>Holiday / Sunday Off</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-updated border"></span><span>Updated Day (Green)</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-not-updated border"></span><span>Not Updated (Red)</span></span>
+          <span class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded col-holiday border"></span><span>Holiday / Sunday Off (Orange)</span></span>
         </div>
       </div>
 
@@ -640,7 +635,7 @@
 
   <!-- ADD PROJECT MODAL -->
   <div id="modal-add-project" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs">
+    <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm p-5 space-y-4 text-xs">
       <div class="flex items-center justify-between border-b pb-3">
         <h4 class="text-sm font-bold text-slate-800">Add Project Assignment</h4>
         <button type="button" class="btn-close-modal text-slate-400 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
@@ -758,12 +753,12 @@
 
     let state = {
       currentUser: null,
-      users: JSON.parse(localStorage.getItem('ent_users_v58')) || DEFAULT_USERS,
-      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v58')) || [],
-      userProjects: JSON.parse(localStorage.getItem('ent_projects_v58')) || DEFAULT_PROJECTS,
-      lockedDays: JSON.parse(localStorage.getItem('ent_locked_days_v58')) || {},
-      calendarHolidays: JSON.parse(localStorage.getItem('ent_calendar_v58')) || DEFAULT_CALENDAR_HOLIDAYS,
-      shiftConfigs: JSON.parse(localStorage.getItem('ent_shifts_v58')) || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 },
+      users: JSON.parse(localStorage.getItem('ent_users_v63')) || DEFAULT_USERS,
+      recycleBin: JSON.parse(localStorage.getItem('ent_recycle_v63')) || [],
+      userProjects: JSON.parse(localStorage.getItem('ent_projects_v63')) || DEFAULT_PROJECTS,
+      lockedDays: JSON.parse(localStorage.getItem('ent_locked_days_v63')) || {},
+      calendarHolidays: JSON.parse(localStorage.getItem('ent_calendar_v63')) || DEFAULT_CALENDAR_HOLIDAYS,
+      shiftConfigs: JSON.parse(localStorage.getItem('ent_shifts_v63')) || { '1ST': 7.5, '2ND': 7.5, '3RD': 6.5, 'GENERAL': 7.5 },
       activeShift: 'GENERAL',
       selectedWeek: '25',
       currentMonth: 'September-2026'
@@ -886,12 +881,12 @@
     }
 
     function saveState() {
-      localStorage.setItem('ent_users_v58', JSON.stringify(state.users));
-      localStorage.setItem('ent_recycle_v58', JSON.stringify(state.recycleBin));
-      localStorage.setItem('ent_projects_v58', JSON.stringify(state.userProjects));
-      localStorage.setItem('ent_locked_days_v58', JSON.stringify(state.lockedDays));
-      localStorage.setItem('ent_calendar_v58', JSON.stringify(state.calendarHolidays));
-      localStorage.setItem('ent_shifts_v58', JSON.stringify(state.shiftConfigs));
+      localStorage.setItem('ent_users_v63', JSON.stringify(state.users));
+      localStorage.setItem('ent_recycle_v63', JSON.stringify(state.recycleBin));
+      localStorage.setItem('ent_projects_v63', JSON.stringify(state.userProjects));
+      localStorage.setItem('ent_locked_days_v63', JSON.stringify(state.lockedDays));
+      localStorage.setItem('ent_calendar_v63', JSON.stringify(state.calendarHolidays));
+      localStorage.setItem('ent_shifts_v63', JSON.stringify(state.shiftConfigs));
 
       if (isCloudConnected && db) {
         db.collection("enterprise_workforce").doc("portal_state").set({
@@ -1119,7 +1114,7 @@
       };
     }
 
-    function getDayStatusClass(dayIdx, dayTotal, dateStr, weekNumber) {
+    function getDayStatusClass(dayIdx, dayTotal, weekNumber) {
       const calHoliday = state.calendarHolidays.find(x => String(x.week) === String(weekNumber) && x.dayCol === dayIdx);
       if (calHoliday && (calHoliday.type === 'holiday' || calHoliday.type === 'sunday')) {
         return 'col-holiday';
@@ -1222,7 +1217,7 @@
 
               <td class="py-2 px-2 text-center font-mono font-bold text-slate-900 border-r border-slate-200">${rowSum.toFixed(1)}</td>
               <td class="py-2 px-2 text-center space-x-1">
-                <button onclick="clearProjectRow(${rIdx})" class="text-amber-500 hover:text-amber-700 transition p-1" title="Clear Row">
+                <button onclick="clearProjectRow(${rIdx})" class="text-amber-500 hover:text-amber-700 transition p-1" title="Clear Unlocked Row">
                   <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 inline"></i>
                 </button>
                 <button onclick="deleteProjectRow(${rIdx})" class="text-slate-400 hover:text-rose-600 transition p-1" title="Delete Row">
@@ -1288,10 +1283,26 @@
     window.clearProjectRow = (rIdx) => {
       const user = state.currentUser;
       const rows = getUserWeekProjects(user.empId, state.selectedWeek);
-      rows[rIdx].hours = [0, 0, 0, 0, 0, 0, 0];
+      const weekLocked = (state.lockedDays[user.empId] && state.lockedDays[user.empId][state.selectedWeek]) || [];
+
+      // Check if all editable days are locked
+      const allEditableLocked = rows[rIdx].hours.every((_, idx) => {
+        const isCalHoliday = state.calendarHolidays.some(x => String(x.week) === String(state.selectedWeek) && x.dayCol === idx && (x.type === 'holiday' || x.type === 'sunday'));
+        const isSundayOff = (idx === 6 && !state.calendarHolidays.some(x => String(x.week) === String(state.selectedWeek) && x.dayCol === 6 && x.type === 'working'));
+        if (isCalHoliday || isSundayOff) return true;
+        return weekLocked.includes(idx);
+      });
+
+      if (allEditableLocked) {
+        showToast('Cannot clear row: All working days for this row are locked/submitted!', 'error');
+        return;
+      }
+
+      // Only clear hours on unlocked days, leaving locked submitted days intact
+      rows[rIdx].hours = rows[rIdx].hours.map((h, idx) => weekLocked.includes(idx) ? h : 0);
       saveState();
       renderTimesheetGrid();
-      showToast('Row hours cleared.', 'info');
+      showToast('Unlocked hours cleared. Locked submitted days remain protected.', 'success');
     };
 
     window.deleteProjectRow = (rIdx) => {
@@ -1329,19 +1340,32 @@
         tableWeekHeading.textContent = `Team Work Efficiency Matrix (Week 25: 14-09-2026 to 20-09-2026)`;
       }
 
+      // Pre-calculate and sort employee metrics from HIGHEST to LOWEST efficiency percentage
+      let employeeMetricsList = efficiencyEmployees.map(emp => {
+        const rows = getUserWeekProjects(emp.empId, state.selectedWeek);
+        const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+        rows.forEach(r => r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0));
+
+        const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
+        const weekLocked = (state.lockedDays[emp.empId] && state.lockedDays[emp.empId][state.selectedWeek]) || [];
+
+        return {
+          emp,
+          dayTotals,
+          metrics,
+          weekLocked
+        };
+      });
+
+      employeeMetricsList.sort((a, b) => b.metrics.efficiency - a.metrics.efficiency);
+
       let chartLabels = [];
       let chartEfficiencies = [];
 
       const effTbody = document.getElementById('efficiency-matrix-tbody');
       if (effTbody) {
-        effTbody.innerHTML = efficiencyEmployees.map(emp => {
-          const rows = getUserWeekProjects(emp.empId, state.selectedWeek);
-          const dayTotals = [0, 0, 0, 0, 0, 0, 0];
-          rows.forEach(r => r.hours.forEach((h, idx) => dayTotals[idx] += parseFloat(h) || 0));
-
-          const metrics = calculateCalendarEfficiency(dayTotals, targetHours, state.selectedWeek);
-          const weekLocked = (state.lockedDays[emp.empId] && state.lockedDays[emp.empId][state.selectedWeek]) || [];
-
+        effTbody.innerHTML = employeeMetricsList.map(item => {
+          const { emp, dayTotals, metrics, weekLocked } = item;
           chartLabels.push(emp.name);
           chartEfficiencies.push(metrics.efficiency);
 
@@ -1379,7 +1403,7 @@
           <tr class="hover:bg-slate-50 transition">
             <td class="px-4 py-3 font-mono font-bold text-slate-800">${emp.empId}</td>
             <td class="px-4 py-3 font-medium text-slate-900">${emp.name}</td>
-            <td class="px-4 py-3 font-mono text-xs text-slate-500">${emp.password}</td>
+            <td class="px-4 py-3 font-mono text-xs text-slate-500">••••••••</td>
             <td class="px-4 py-3">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
                 emp.role === 'MANAGER' ? 'bg-indigo-100 text-indigo-800' :
@@ -1409,6 +1433,7 @@
       lucide.createIcons();
     }
 
+    // INSPECT EMPLOYEE TASKS MODAL
     window.inspectEmployeeTasks = (empId, empName) => {
       document.getElementById('inspect-modal-title').textContent = `${empName} (${empId})`;
       document.getElementById('inspect-modal-subtitle').textContent = `Inspecting project tasks & logged hours for Week 25 (14-09-2026 to 20-09-2026)`;
@@ -2114,7 +2139,7 @@
             showToast(`Welcome back, ${found.name}!`, 'success');
           } else {
             const errBox = document.getElementById('login-error-msg');
-            if (errBox) errBox.classList.remove('hidden');
+            if (errBox) errBox.classList.add('hidden');
             showToast('Invalid Employee ID or password. Please check your credentials.', 'error');
           }
         });
