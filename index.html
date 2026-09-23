@@ -737,7 +737,7 @@
 
   <footer class="mt-auto bg-white border-t border-slate-200 py-4 px-4 sm:px-6 w-full text-slate-500">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs gap-2 text-center sm:text-left">
-      <div><span>&copy; 2026 Surya M R. All rights reserved. TVS Motor Company Enterprise Suite.</span></div>
+      <div><span>&copy; 2026 Surya M R. All rights reserved.</span></div>
       <div class="flex items-center space-x-4">
         <span class="inline-flex items-center space-x-2">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-300"></span>
@@ -1038,7 +1038,9 @@
         });
       }
 
-      checkAuth();
+      // Enforce manual sign-in on every fresh page load
+      localStorage.removeItem('ent_logged_empid');
+      openLoginModal();
     });
 
     function setupThemeListener() {
@@ -1057,18 +1059,6 @@
       ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
         window.addEventListener(evt, resetInactivityTimer, { passive: true });
       });
-    }
-
-    function checkAuth() {
-      const savedEmpId = localStorage.getItem('ent_logged_empid');
-      if (savedEmpId) {
-        const found = state.users.find(u => u.empId.toUpperCase() === savedEmpId.toUpperCase());
-        if (found) {
-          authenticateUser(found);
-          return;
-        }
-      }
-      openLoginModal();
     }
 
     function openLoginModal() {
